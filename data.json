@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-19T09:37:00+08:00",
+  "updatedAt": "2026-11-19T11:20:00+08:00",
   "currency": "TWD",
   "travelers": [
     "William",
@@ -69,6 +69,20 @@
       "amountCents": 26300,
       "participants": [
         "William",
+        "LamEC",
+        "Carrie"
+      ],
+      "paidBy": null
+    },
+    {
+      "id": "e5",
+      "date": "2026-11-19",
+      "category": "車費",
+      "description": "去 SOGO 車費",
+      "amountCents": 15400,
+      "participants": [
+        "William",
+        "Bob",
         "LamEC",
         "Carrie"
       ],
