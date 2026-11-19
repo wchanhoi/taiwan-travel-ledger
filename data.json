@@ -134,8 +134,8 @@
       "recordedAt": "2026-11-19",
       "account": "LamEC + Carrie",
       "amountCents": 326863,
-      "receivedBy": null,
-      "note": "按使用者確認：已付清截至目前的分攤。實際付款日期、方式及收款人尚待核對。"
+      "receivedBy": "William",
+      "note": "LamEC + Carrie 的已付款 NT$3,268.63 由 William 收取；William 會將應付 Edward 的共同開支款項集中轉交，未確認實際轉帳前不記為已付 Edward。"
     }
   ],
   "shoppingReceipts": [
@@ -198,5 +198,10 @@
       "note": "收據上黃色標記4件屬William；其他5件屬Carrie。由Carrie支付整張發票。個人購物，不納入共同旅行分攤。"
     }
   ],
-  "defaultPaidBy": "William"
+  "defaultPaidBy": "William",
+  "settlementRouting": {
+    "collector": "William",
+    "forwardTo": "Edward",
+    "description": "由 William 統一收取其他團友的共同開支結算款，並集中轉帳給 Edward；未完成的轉帳只列為待付款。"
+  }
 }
