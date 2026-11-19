@@ -126,6 +126,23 @@
         "Carrie"
       ],
       "paidBy": "William"
+    },
+    {
+      "id": "e9",
+      "date": "2026-11-19",
+      "category": "餐飲",
+      "description": "上吉燒肉晚餐",
+      "amountCents": 1079100,
+      "participants": [
+        "William",
+        "Edward",
+        "Bob",
+        "LamEC",
+        "Carrie"
+      ],
+      "paidBy": "Edward",
+      "receiptTime": "20:08",
+      "receiptSource": "中國信託銀行信用卡交易收據"
     }
   ],
   "settlements": [
