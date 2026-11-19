@@ -87,6 +87,32 @@
         "Carrie"
       ],
       "paidBy": "William"
+    },
+    {
+      "id": "e6",
+      "date": "2026-11-19",
+      "category": "車費",
+      "description": "去新光三越車費",
+      "amountCents": 13000,
+      "participants": [
+        "Edward",
+        "William",
+        "Bob"
+      ],
+      "paidBy": "William"
+    },
+    {
+      "id": "e7",
+      "date": "2026-11-19",
+      "category": "車費",
+      "description": "去 Swork 車費",
+      "amountCents": 15000,
+      "participants": [
+        "Edward",
+        "William",
+        "Bob"
+      ],
+      "paidBy": "William"
     }
   ],
   "settlements": [
@@ -158,5 +184,6 @@
       "totalCents": 4095600,
       "note": "收據上黃色標記4件屬William；其他5件屬Carrie。由Carrie支付整張發票。個人購物，不納入共同旅行分攤。"
     }
-  ]
+  ],
+  "defaultPaidBy": "William"
 }
