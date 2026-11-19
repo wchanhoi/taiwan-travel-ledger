@@ -98,5 +98,65 @@
       "receivedBy": null,
       "note": "按使用者確認：已付清截至目前的分攤。實際付款日期、方式及收款人尚待核對。"
     }
+  ],
+  "shoppingReceipts": [
+    {
+      "id": "rapha-20261119-ht54441342",
+      "date": "2026-11-19",
+      "time": "13:08",
+      "merchant": "Rapha",
+      "receiptNumber": "HT-54441342",
+      "paidBy": "Carrie",
+      "currency": "TWD",
+      "items": [
+        {
+          "description": "Men's Brevet Element Cargo Bib Shorts",
+          "amountCents": 476000,
+          "owner": "William"
+        },
+        {
+          "description": "Women's Pro Team LS Lightweight Jersey III",
+          "amountCents": 440000,
+          "owner": "Carrie"
+        },
+        {
+          "description": "Women's Pro Team Gore-Tex LW Rain Jacket II",
+          "amountCents": 1040000,
+          "owner": "Carrie"
+        },
+        {
+          "description": "Clubhouse Essentials Case",
+          "amountCents": 140000,
+          "owner": "William"
+        },
+        {
+          "description": "Brevet Cap",
+          "amountCents": 140000,
+          "owner": "William"
+        },
+        {
+          "description": "Clubhouse Cap",
+          "amountCents": 114000,
+          "owner": "William"
+        },
+        {
+          "description": "Women's Pro Team Shadow Gilet",
+          "amountCents": 776000,
+          "owner": "Carrie"
+        },
+        {
+          "description": "Women's Pro Team LS Lightweight Jersey III",
+          "amountCents": 440000,
+          "owner": "Carrie"
+        },
+        {
+          "description": "Women's Pro Team Long Sleeve Midweight Jersey II",
+          "amountCents": 529600,
+          "owner": "Carrie"
+        }
+      ],
+      "totalCents": 4095600,
+      "note": "收據上黃色標記4件屬William；其他5件屬Carrie。由Carrie支付整張發票。個人購物，不納入共同旅行分攤。"
+    }
   ]
 }
