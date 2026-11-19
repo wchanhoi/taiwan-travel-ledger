@@ -64,6 +64,7 @@
     .tags {display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}.tag {font-size:10px;padding:5px 8px;border-radius:6px;background:#f1f5f3;color:#65807a;font-weight:700;}
     .table-wrap{overflow-x:auto}.tbl{border-collapse:collapse;width:100%;min-width:560px;font-size:13px}.tbl th{text-align:left;padding:13px 10px;border-bottom:1px solid #e4ece8;font-size:11px;font-weight:800;color:#6d817c;white-space:nowrap;background:#f7f9f7}.tbl td{padding:16px 10px;border-bottom:1px solid #ecf1ed;vertical-align:middle}.tbl tr:last-child td{border-bottom:0}.tbl .num{text-align:right;font-variant-numeric:tabular-nums;font-weight:800;white-space:nowrap}.tbl .name{font-weight:800}.smallsub{font-size:11px;color:#91a19c;margin-top:4px}
     .settlement {border-left:4px solid #29a178;background:#f2faf5;border-radius:14px;padding:18px 20px;margin:16px 0 24px;font-size:13px;line-height:1.8;color:#466a5d;}
+    .shopping-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0 0 18px}.shopping-metric{background:#f1f7f4;border-radius:14px;padding:14px}.shopping-metric .tiny{font-size:11px;color:#6d817c}.shopping-metric strong{display:block;font-size:19px;margin-top:7px;font-variant-numeric:tabular-nums}.shopping-title{font-size:15px;font-weight:850;margin:14px 0}.shopping-claim{background:#f8f4ea;border-radius:12px;padding:15px;font-size:13px;line-height:1.8;margin:12px 0}.shopping-owner{font-weight:750;color:#355b59}.shopping-receipt{border-top:1px solid #e4eeea;margin-top:18px;padding-top:12px}.shopping-receipt:first-child{border-top:0;margin-top:0;padding-top:0}@media(max-width:570px){.shopping-grid{grid-template-columns:1fr 1fr}.shopping-metric:first-child{grid-column:1/-1}} 
     .empty{padding:40px;text-align:center;color:var(--muted);font-size:14px;}
     .footer{color:#8da29c;text-align:center;font-size:11px;line-height:1.8;padding:37px 15px 40px;}
     .sync{display:flex;align-items:center;gap:7px;font-size:11px;color:#7d9690}
@@ -93,6 +94,7 @@
       <button class="tab active" type="button" role="tab" aria-selected="true" data-panel="overview">總覽</button>
       <button class="tab" type="button" role="tab" aria-selected="false" data-panel="accounts">個人分攤</button>
       <button class="tab" type="button" role="tab" aria-selected="false" data-panel="expenses">支出明細</button>
+      <button class="tab" type="button" role="tab" aria-selected="false" data-panel="shopping">個人購物</button>
       <button class="tab" type="button" role="tab" aria-selected="false" data-panel="payments">付款紀錄</button>
     </nav>
     <section class="panel active" id="overview" role="tabpanel">
@@ -100,11 +102,14 @@
         <div class="card"><div class="card-head"><h2>旅伴結算狀態</h2><span class="subtitle">4 個結算帳戶 · 5 位旅伴</span></div><div id="accounts-list"></div><div class="hint">ℹ︎ LamEC + Carrie 合併結算，但每筆消費仍按兩個人計算。5 筆開支全部由 William 代付，其他人的付款按結算紀錄扣除。</div></div>
         <div class="card"><div class="card-head"><h2>開支分佈</h2><span class="subtitle">按類別</span></div><div class="donutbox"><div class="donut" id="donut" role="img" aria-label="各類開支比例"><div class="donut-center"><strong id="donut-total">10,739</strong><small>總消費 NT$</small></div></div></div><div class="legend" id="legend"></div></div>
       </div>
+      <div class="section-row"><h2>個人代購結算</h2><span class="muted">不參與共同開支分攤</span></div>
+      <div class="card" id="shopping-overview"></div>
       <div class="section-row"><h2>最近開支</h2><span class="sync" id="syncStatus">載入最新資料中…</span></div>
       <div class="card" id="latest-expenses"></div>
     </section>
     <section class="panel" id="accounts" role="tabpanel"><div class="card"><div class="card-head"><h2>各人應分攤及付款</h2><span class="subtitle">LamEC + Carrie 合併顯示</span></div><div class="table-wrap"><table class="tbl"><thead><tr><th>帳戶</th><th style="text-align:right">應分攤</th><th style="text-align:right">已付</th><th style="text-align:right">待結算</th><th>狀態</th></tr></thead><tbody id="account-table"></tbody></table></div><div class="hint">William 是所有消費的代付者，毋須還款給自己。其他帳戶顯示分攤額扣除已登記結算後的差額；已付結算的實際收款人仍待確認。</div></div></section>
     <section class="panel" id="expenses" role="tabpanel"><div class="card"><div class="card-head"><h2>所有支出明細</h2><span class="subtitle" id="expense-count">4 筆開支</span></div><div id="all-expenses"></div></div></section>
+    <section class="panel" id="shopping" role="tabpanel"><div class="card"><div class="card-head"><h2>個人購物 · 發票及付款人</h2><span class="subtitle">與共同旅行開支獨立計算</span></div><div id="shopping-summary"></div><div id="shopping-list"></div><div class="hint">個人商品由指定持有人承擔，付款人可以不同。本頁不會將個人購物平均分攤給全體旅伴，也不會自動與共同車費互相抵銷。</div></div></section>
     <section class="panel" id="payments" role="tabpanel"><div class="card"><div class="card-head"><h2>已登記的結算付款</h2><span class="subtitle">與消費代付分開記錄</span></div><div class="settlement" id="settlement-note">✅ <b>LamEC + Carrie 已付清</b>（按目前登記的開支）。新的共同開支加入後，狀態會依最新分攤額重新計算。</div><div id="payment-list"></div><div class="hint">付款紀錄是團友之間的結算紀錄，並非各筆消費的原始付款人。實際收款人、付款日期可在確認後補充。</div></div></section>
     <div class="footer">🇹🇼 2026 台灣旅行共同記帳 · 獨立網站版本<br><span id="footer-live">資料來源：網站記帳資料（data.json）</span></div>
   </main>
@@ -211,6 +216,66 @@
           "receivedBy": null,
           "note": "按使用者確認：已付清截至目前的分攤。實際付款日期、方式及收款人尚待核對。"
         }
+      ],
+      "shoppingReceipts": [
+        {
+          "id": "rapha-20261119-ht54441342",
+          "date": "2026-11-19",
+          "time": "13:08",
+          "merchant": "Rapha",
+          "receiptNumber": "HT-54441342",
+          "paidBy": "Carrie",
+          "currency": "TWD",
+          "items": [
+            {
+              "description": "Men's Brevet Element Cargo Bib Shorts",
+              "amountCents": 476000,
+              "owner": "William"
+            },
+            {
+              "description": "Women's Pro Team LS Lightweight Jersey III",
+              "amountCents": 440000,
+              "owner": "Carrie"
+            },
+            {
+              "description": "Women's Pro Team Gore-Tex LW Rain Jacket II",
+              "amountCents": 1040000,
+              "owner": "Carrie"
+            },
+            {
+              "description": "Clubhouse Essentials Case",
+              "amountCents": 140000,
+              "owner": "William"
+            },
+            {
+              "description": "Brevet Cap",
+              "amountCents": 140000,
+              "owner": "William"
+            },
+            {
+              "description": "Clubhouse Cap",
+              "amountCents": 114000,
+              "owner": "William"
+            },
+            {
+              "description": "Women's Pro Team Shadow Gilet",
+              "amountCents": 776000,
+              "owner": "Carrie"
+            },
+            {
+              "description": "Women's Pro Team LS Lightweight Jersey III",
+              "amountCents": 440000,
+              "owner": "Carrie"
+            },
+            {
+              "description": "Women's Pro Team Long Sleeve Midweight Jersey II",
+              "amountCents": 529600,
+              "owner": "Carrie"
+            }
+          ],
+          "totalCents": 4095600,
+          "note": "收據上黃色標記4件屬William；其他5件屬Carrie。由Carrie支付整張發票。個人購物，不納入共同旅行分攤。"
+        }
       ]
     };
     const $ = x => document.getElementById(x);
@@ -231,6 +296,13 @@
         if(!Array.isArray(e.participants)||e.participants.length===0||new Set(e.participants).size!==e.participants.length||e.participants.some(n=>!names.has(n))) throw Error('參與者不正確');
       }
       for(const p of data.settlements){if(!Number.isSafeInteger(p.amountCents) || p.amountCents<0) throw Error('付款金額不正確');}
+      for(const receipt of data.shoppingReceipts||[]){
+        if(!Array.isArray(receipt.items) || receipt.items.length===0 || !names.has(receipt.paidBy)) throw Error('購物發票資料不正確');
+        if(!Number.isSafeInteger(receipt.totalCents)||receipt.totalCents<0)throw Error('購物發票總額不正確');
+        let sum=0;
+        for(const item of receipt.items){if(!names.has(item.owner)||!Number.isSafeInteger(item.amountCents)||item.amountCents<0)throw Error('個人購物商品資料不正確');sum+=item.amountCents;}
+        if(sum!==receipt.totalCents)throw Error('購物發票商品與總額不符');
+      }
       return data;
     }
     function compute(raw){
@@ -266,13 +338,26 @@
           status:a.name===payerAccount?'advance':balanceCents===0?'settled':balanceCents<0?'overpaid':paidCents>0?'partially-paid':'unconfirmed'};
       });
       const paidCents=raw.settlements.reduce((sum,p)=>sum+p.amountCents,0);
+      const shoppingReceipts=raw.shoppingReceipts||[];
+      const ownedShopping=new Map();
+      const personalClaims=new Map();
+      for(const r of shoppingReceipts){for(const item of r.items){
+        ownedShopping.set(item.owner,(ownedShopping.get(item.owner)||0)+item.amountCents);
+        if(item.owner!==r.paidBy){const key=item.owner+'|'+r.paidBy;personalClaims.set(key,(personalClaims.get(key)||0)+item.amountCents);}
+      }}
+      const shopping={
+        total:shoppingReceipts.reduce((sum,r)=>sum+r.totalCents,0)/100,
+        receipts:shoppingReceipts.map(r=>({...r,total:r.totalCents/100,items:r.items.map(item=>({...item,amount:item.amountCents/100}))})),
+        owners:[...ownedShopping.entries()].map(([name,amount])=>({name,amount:amount/100})),
+        claims:[...personalClaims.entries()].map(([key,amount])=>({from:key.split('|')[0],to:key.split('|')[1],amount:amount/100}))
+      };
       const dueCents=accounts.reduce((sum,a)=>sum+Math.round(a.due*100),0);
       if(dueCents!==totalCents) throw Error('帳目分攤總額與消費總額不符');
       const remainingCents = payerAccount ? accounts.filter(a=>a.name!==payerAccount).reduce((s,a)=>s+Math.max(0,Math.round(a.balance*100)),0) : totalCents-paidCents;
       return {
         source:'live',updatedAt:raw.updatedAt,remaining:remainingCents/100,payerAccount,
         fetchedAt:new Date().toLocaleString('zh-TW',{timeZone:'Asia/Taipei',hour12:false}),
-        total:totalCents/100,paid:paidCents/100,accounts,
+        total:totalCents/100,paid:paidCents/100,accounts,shopping,
         expenses:[...raw.expenses].reverse().map(e=>({date:e.date,category:e.category,description:e.description,amount:e.amountCents/100,participants:e.participants,paidBy:e.paidBy??'未提供'})),
         payments:[...raw.settlements].reverse().map(p=>({date:p.recordedAt,account:p.account,amount:p.amountCents/100,receivedBy:p.receivedBy??'未提供',note:p.note})),
         categories:Array.from(cats,(entry)=>({name:entry[0],amount:entry[1]/100})).sort((a,b)=>b.amount-a.amount)
@@ -295,6 +380,12 @@
       $('settlement-note').innerHTML=couple&&couple.status==='settled'
         ? `✅ <b>LamEC + Carrie 已付清</b>，截至目前應分攤 ${full(couple.due)}，已登記付款 ${full(couple.paid)}。新增開支後狀態會重新計算。`
         : couple?`ℹ︎ <b>LamEC + Carrie 最新結算</b>：應分攤 ${full(couple.due)}，已付 ${full(couple.paid)}，差額 ${full(couple.balance)}。`:'尚未有此帳戶記錄。';
+      const shopping=data.shopping||{total:0,receipts:[],owners:[],claims:[]};
+      const shoppingTotals=`<div class="shopping-grid"><div class="shopping-metric"><div class="tiny">購物發票合計</div><strong>${full(shopping.total)}</strong></div>${shopping.owners.map(a=>`<div class="shopping-metric"><div class="tiny">${esc(a.name)} 的商品</div><strong>${full(a.amount)}</strong></div>`).join('')}</div>`;
+      const claimHtml=shopping.claims.length?shopping.claims.map(c=>`<div class="shopping-claim"><b>${esc(c.from)} 應付 ${esc(c.to)} ${full(c.amount)}</b><div>這是個人代購的未確認結算，不與共同旅行開支互相抵銷。</div></div>`).join(''):'<div class="hint">目前沒有個人代購待結算。</div>';
+      $('shopping-overview').innerHTML=shopping.receipts.length?shoppingTotals+claimHtml:'<div class="empty">尚未有個人購物紀錄</div>';
+      $('shopping-summary').innerHTML=shopping.receipts.length?shoppingTotals+claimHtml:'';
+      $('shopping-list').innerHTML=shopping.receipts.map(r=>`<div class="shopping-receipt"><div class="shopping-title">${esc(r.merchant)} · ${esc(r.date)} · ${esc(r.time||'')} · 發票 ${esc(r.receiptNumber)}</div><div class="subtitle">付款人：<b>${esc(r.paidBy)}</b> · 共 ${r.items.length} 件 · ${full(r.total)}</div><div class="table-wrap"><table class="tbl"><thead><tr><th>商品</th><th>歸屬</th><th style="text-align:right">金額</th></tr></thead><tbody>${r.items.map(item=>`<tr><td>${esc(item.description)}</td><td class="shopping-owner">${esc(item.owner)}</td><td class="num">${full(item.amount)}</td></tr>`).join('')}</tbody></table></div></div>`).join('');
       const items=data.expenses||[];
       $('latest-expenses').innerHTML=items.length?items.slice(0,4).map(expenseHtml).join(''):'<div class="empty">尚未有開支</div>';
       $('all-expenses').innerHTML=items.length?items.map(expenseHtml).join(''):'<div class="empty">尚未有開支</div>';
