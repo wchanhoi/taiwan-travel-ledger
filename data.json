@@ -30,7 +30,7 @@
         "Edward",
         "Bob"
       ],
-      "paidBy": null
+      "paidBy": "William"
     },
     {
       "id": "e2",
@@ -45,7 +45,7 @@
         "LamEC",
         "Carrie"
       ],
-      "paidBy": null
+      "paidBy": "William"
     },
     {
       "id": "e3",
@@ -59,7 +59,7 @@
         "LamEC",
         "Carrie"
       ],
-      "paidBy": null
+      "paidBy": "William"
     },
     {
       "id": "e4",
@@ -72,7 +72,7 @@
         "LamEC",
         "Carrie"
       ],
-      "paidBy": null
+      "paidBy": "William"
     },
     {
       "id": "e5",
@@ -86,7 +86,7 @@
         "LamEC",
         "Carrie"
       ],
-      "paidBy": null
+      "paidBy": "William"
     }
   ],
   "settlements": [
