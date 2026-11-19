@@ -65,6 +65,7 @@
     .table-wrap{overflow-x:auto}.tbl{border-collapse:collapse;width:100%;min-width:560px;font-size:13px}.tbl th{text-align:left;padding:13px 10px;border-bottom:1px solid #e4ece8;font-size:11px;font-weight:800;color:#6d817c;white-space:nowrap;background:#f7f9f7}.tbl td{padding:16px 10px;border-bottom:1px solid #ecf1ed;vertical-align:middle}.tbl tr:last-child td{border-bottom:0}.tbl .num{text-align:right;font-variant-numeric:tabular-nums;font-weight:800;white-space:nowrap}.tbl .name{font-weight:800}.smallsub{font-size:11px;color:#91a19c;margin-top:4px}
     .settlement {border-left:4px solid #29a178;background:#f2faf5;border-radius:14px;padding:18px 20px;margin:16px 0 24px;font-size:13px;line-height:1.8;color:#466a5d;}
     .shopping-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0 0 18px}.shopping-metric{background:#f1f7f4;border-radius:14px;padding:14px}.shopping-metric .tiny{font-size:11px;color:#6d817c}.shopping-metric strong{display:block;font-size:19px;margin-top:7px;font-variant-numeric:tabular-nums}.shopping-title{font-size:15px;font-weight:850;margin:14px 0}.shopping-claim{background:#f8f4ea;border-radius:12px;padding:15px;font-size:13px;line-height:1.8;margin:12px 0}.shopping-owner{font-weight:750;color:#355b59}.shopping-receipt{border-top:1px solid #e4eeea;margin-top:18px;padding-top:12px}.shopping-receipt:first-child{border-top:0;margin-top:0;padding-top:0}@media(max-width:570px){.shopping-grid{grid-template-columns:1fr 1fr}.shopping-metric:first-child{grid-column:1/-1}} 
+    .transfer-list{display:flex;flex-direction:column;gap:10px}.transfer-route{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto;align-items:center;gap:8px;border:1px solid #e6efec;background:#fbfdfb;border-radius:14px;padding:15px}.transfer-person{font-weight:850;font-size:13px;min-width:0;overflow-wrap:anywhere}.transfer-arrow{color:#328479;font-weight:900}.transfer-money{font-size:15px;font-weight:900;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}.transfer-scenarios{display:grid;grid-template-columns:1fr 1fr;gap:15px}.transfer-scenario{padding:18px;border:1px solid #e7eee9;border-radius:18px;background:#fff}.transfer-scenario h3{margin:0 0 8px;font-size:15px}.transfer-scenario p{margin:0 0 14px;color:#657d77;font-size:12px;line-height:1.65}.transfer-alert{padding:13px 16px;border-radius:12px;background:#fff7e8;color:#835f26;font-size:12px;line-height:1.7;margin-bottom:17px}.transfer-section{margin:20px 0 13px;font-size:15px;font-weight:850}.transfer-account{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #edf2ee;font-size:13px}.transfer-account strong{font-variant-numeric:tabular-nums}@media(max-width:800px){.transfer-scenarios{grid-template-columns:1fr}}@media(max-width:570px){.transfer-route{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:6px}.transfer-money{grid-column:1/-1;text-align:left;padding-top:4px;font-size:18px}} 
     .empty{padding:40px;text-align:center;color:var(--muted);font-size:14px;}
     .footer{color:#8da29c;text-align:center;font-size:11px;line-height:1.8;padding:37px 15px 40px;}
     .sync{display:flex;align-items:center;gap:7px;font-size:11px;color:#7d9690}
@@ -92,6 +93,7 @@
     <div id="alert" class="alert" role="status"></div>
     <nav class="tabs" role="tablist" aria-label="帳目分類">
       <button class="tab active" type="button" role="tab" aria-selected="true" data-panel="overview">總覽</button>
+      <button class="tab" type="button" role="tab" aria-selected="false" data-panel="transfer">誰付誰</button>
       <button class="tab" type="button" role="tab" aria-selected="false" data-panel="accounts">個人分攤</button>
       <button class="tab" type="button" role="tab" aria-selected="false" data-panel="expenses">支出明細</button>
       <button class="tab" type="button" role="tab" aria-selected="false" data-panel="shopping">個人購物</button>
@@ -102,11 +104,14 @@
         <div class="card"><div class="card-head"><h2>旅伴結算狀態</h2><span class="subtitle">4 個結算帳戶 · 5 位旅伴</span></div><div id="accounts-list"></div><div class="hint">ℹ︎ LamEC + Carrie 合併結算，但每筆消費仍按兩個人計算。8 筆共同開支由 William 與 Edward 分別代付。兩人的應收款須待確認 LamEC + Carrie 已付款項的實際收款人後，才能作最後分配。</div></div>
         <div class="card"><div class="card-head"><h2>開支分佈</h2><span class="subtitle">按類別</span></div><div class="donutbox"><div class="donut" id="donut" role="img" aria-label="各類開支比例"><div class="donut-center"><strong id="donut-total">11,291</strong><small>總消費 NT$</small></div></div></div><div class="legend" id="legend"></div></div>
       </div>
+      <div class="section-row"><h2>誰要付款給誰？</h2><span class="muted">共同開支與個人購物分開結算</span></div>
+      <div class="card" id="transfer-overview"></div>
       <div class="section-row"><h2>個人代購結算</h2><span class="muted">不參與共同開支分攤</span></div>
       <div class="card" id="shopping-overview"></div>
       <div class="section-row"><h2>最近開支</h2><span class="sync" id="syncStatus">載入最新資料中…</span></div>
       <div class="card" id="latest-expenses"></div>
     </section>
+    <section class="panel" id="transfer" role="tabpanel"><div class="card"><div class="card-head"><h2>轉帳建議 · 誰付誰</h2><span class="subtitle">按已登記代付及結算資料自動計算</span></div><div id="transfer-content"></div></div></section>
     <section class="panel" id="accounts" role="tabpanel"><div class="card"><div class="card-head"><h2>各人應分攤及付款</h2><span class="subtitle">LamEC + Carrie 合併顯示</span></div><div class="table-wrap"><table class="tbl"><thead><tr><th>帳戶</th><th style="text-align:right">應分攤</th><th style="text-align:right">代付開支</th><th style="text-align:right">已付結算</th><th style="text-align:right">淨差額</th><th>狀態</th></tr></thead><tbody id="account-table"></tbody></table></div><div class="hint">由 William 和 Edward 分別先代付開支。淨差額會扣除個人消費份額、已代付金額及已登記付款；正數是待付、負數是應收。LamEC + Carrie 已付款 NT$3,268.63 的收款人尚待核對，因此 William／Edward 的應收數字未扣除這筆未指定收款人的款項。</div></div></section>
     <section class="panel" id="expenses" role="tabpanel"><div class="card"><div class="card-head"><h2>所有支出明細</h2><span class="subtitle" id="expense-count">8 筆開支</span></div><div id="all-expenses"></div></div></section>
     <section class="panel" id="shopping" role="tabpanel"><div class="card"><div class="card-head"><h2>個人購物 · 發票及付款人</h2><span class="subtitle">與共同旅行開支獨立計算</span></div><div id="shopping-summary"></div><div id="shopping-list"></div><div class="hint">個人商品由指定持有人承擔，付款人可以不同。本頁不會將個人購物平均分攤給全體旅伴，也不會自動與共同車費互相抵銷。</div></div></section>
@@ -406,14 +411,42 @@
       const dueCents=accounts.reduce((sum,a)=>sum+Math.round(a.due*100),0);
       if(dueCents!==totalCents) throw Error('帳目分攤總額與消費總額不符');
       const remainingCents=accounts.reduce((sum,a)=>sum+Math.max(0,Math.round(a.balance*100)),0);
+      const creditorCandidates=accounts.filter(a=>a.advanced>0).map(a=>a.name);
+      const settlementScenarios=unallocatedReceiptsCents===0
+        ? [suggestedTransfers(accounts,0,null)]
+        : creditorCandidates.map(name=>suggestedTransfers(accounts,unallocatedReceiptsCents,name));
+      const transferOverview={
+        outstanding:remainingCents/100,
+        unpaid:accounts.filter(a=>a.balance>0).map(a=>({name:a.name,amount:a.balance})),
+        scenarios:settlementScenarios,
+        requiresRecipientConfirmation:unallocatedReceiptsCents>0
+      };
       return {
-        source:'live',updatedAt:raw.updatedAt,remaining:remainingCents/100,unallocatedReceipts:unallocatedReceiptsCents/100,
+        source:'live',updatedAt:raw.updatedAt,remaining:remainingCents/100,unallocatedReceipts:unallocatedReceiptsCents/100,transferOverview,
         fetchedAt:new Date().toLocaleString('zh-TW',{timeZone:'Asia/Taipei',hour12:false}),
         total:totalCents/100,paid:paidCents/100,accounts,shopping,
         expenses:[...raw.expenses].reverse().map(e=>({date:e.date,category:e.category,description:e.description,amount:e.amountCents/100,participants:e.participants,paidBy:e.paidBy??'未提供'})),
         payments:[...raw.settlements].reverse().map(p=>({date:p.recordedAt,account:p.account,amount:p.amountCents/100,receivedBy:p.receivedBy??'未提供',note:p.note})),
         categories:Array.from(cats,(entry)=>({name:entry[0],amount:entry[1]/100})).sort((a,b)=>b.amount-a.amount)
       };
+    }
+    function suggestedTransfers(accountBalances,unallocatedCents,recipient){
+      const nodes=accountBalances.map(a=>({name:a.name,cents:Math.round(a.balance*100)+(a.name===recipient?unallocatedCents:0)}));
+      if(nodes.reduce((sum,a)=>sum+a.cents,0)!==0)throw Error('轉帳結算不平衡，請核對付款收款人');
+      const debtors=nodes.filter(a=>a.cents>0).sort((a,b)=>b.cents-a.cents).map(a=>({...a}));
+      const creditors=nodes.filter(a=>a.cents<0).map(a=>({name:a.name,cents:-a.cents})).sort((a,b)=>b.cents-a.cents);
+      const routes=[];
+      let di=0,ci=0;
+      while(di<debtors.length&&ci<creditors.length){
+        const cents=Math.min(debtors[di].cents,creditors[ci].cents);
+        if(cents<=0)throw Error('轉帳分配失敗');
+        routes.push({from:debtors[di].name,to:creditors[ci].name,amount:cents/100});
+        debtors[di].cents-=cents;creditors[ci].cents-=cents;
+        if(debtors[di].cents===0)di++;
+        if(creditors[ci].cents===0)ci++;
+      }
+      if(di!==debtors.length||ci!==creditors.length)throw Error('轉帳未完全配平');
+      return {recipient,conditional:unallocatedCents>0,routes};
     }
     function expenseHtml(item) {return `<div class="expense-card"><div class="expense-icon">${emoji(item.category)}</div><div><div class="expense-title">${esc(item.description)}</div><div class="expense-desc">${esc(item.date)} · ${esc(item.category)} · ${item.participants.length} 人分攤 · 付款：${esc(item.paidBy)}</div><div class="tags">${item.participants.map(p=>`<span class="tag">${esc(p)}</span>`).join('')}</div></div><div class="expense-amount">${full(item.amount)}</div></div>`;}
     function draw(data,preview=false) {
@@ -435,7 +468,17 @@
       $('settlement-note').innerHTML=couple&&couple.status==='settled'
         ? `✅ <b>LamEC + Carrie 已付清</b>，截至目前應分攤 ${full(couple.due)}，已登記付款 ${full(couple.paid)}。新增開支後狀態會重新計算。`
         : couple?`ℹ︎ <b>LamEC + Carrie 最新結算</b>：應分攤 ${full(couple.due)}，已付 ${full(couple.paid)}，差額 ${full(couple.balance)}。`:'尚未有此帳戶記錄。';
+      const t=data.transferOverview||{outstanding:0,unpaid:[],scenarios:[],requiresRecipientConfirmation:false};
+      const renderRoutes=routes=>routes.length?'<div class="transfer-list">'+routes.map(r=>`<div class="transfer-route"><span class="transfer-person">${esc(r.from)}</span><span class="transfer-arrow">→</span><span class="transfer-person">${esc(r.to)}</span><span class="transfer-money">${full(r.amount)}</span></div>`).join('')+'</div>':'<div class="hint">共同開支已結清，暫無轉帳需要。</div>';
+      const transferIntro=t.unpaid.length?'<div class="transfer-section">目前仍需支付的共同開支</div>'+t.unpaid.map(a=>`<div class="transfer-account"><span>${esc(a.name)}</span><strong>${full(a.amount)}</strong></div>`).join(''):'<div class="hint">目前沒有待付的共同開支。</div>';
+      const scenarioAlert=t.requiresRecipientConfirmation?`<div class="transfer-alert"><b>尚未確認歷史付款的收款人：</b>LamEC + Carrie 已登記結算 ${full(data.unallocatedReceipts)}，但尚不知道給了 William 或 Edward。以下兩套轉帳清單只是條件試算，不能同時執行；若款項有拆分，需提供各收款人實收金額才可得出最終清單。</div>`:'';
+      const scenarioHtml='<div class="transfer-section">'+(t.requiresRecipientConfirmation?'兩種不同情況的轉帳清單':'確認後的轉帳清單')+'</div><div class="transfer-scenarios">'+t.scenarios.map((sc,i)=>`<div class="transfer-scenario"><h3>${sc.conditional?'情況 '+(i+1)+'：之前款項全數給 '+esc(sc.recipient):'建議轉帳'}</h3><p>${sc.conditional?'只在 NT$'+fmt(data.unallocatedReceipts)+' 已全部由 '+esc(sc.recipient)+' 收到時才適用。':'根據目前已登記代付與付款資料。'}</p>${renderRoutes(sc.routes)}</div>`).join('')+'</div>';
       const shopping=data.shopping||{total:0,receipts:[],owners:[],claims:[]};
+      const personalTransfers=shopping.claims.length?shopping.claims.map(c=>`<div class="transfer-route"><span class="transfer-person">${esc(c.from)}</span><span class="transfer-arrow">→</span><span class="transfer-person">${esc(c.to)}</span><span class="transfer-money">${full(c.amount)}</span></div>`).join(''):'<div class="hint">沒有個人代購待付款。</div>';
+      const transferPersonal='<div class="transfer-section">個人購物代付 · 獨立結算</div><div class="transfer-list">'+personalTransfers+'</div><div class="hint">Rapha 購物款項與旅行共同開支不互相抵銷。以上金額尚未有個人購物還款紀錄。</div>';
+      $('transfer-content').innerHTML=scenarioAlert+transferIntro+scenarioHtml+transferPersonal;
+      $('transfer-overview').innerHTML=(t.requiresRecipientConfirmation?'<div class="transfer-alert">⚠ 之前一筆結算付款的收款人未確認；請到「誰付誰」分頁查看兩種條件試算。</div>':'')+transferIntro+transferPersonal+'<div class="hint">詳細轉帳對象請點選上方「誰付誰」分頁。僅在收款人確認後，條件試算才可視作正式指示。</div>';
+
       const shoppingTotals=`<div class="shopping-grid"><div class="shopping-metric"><div class="tiny">購物發票合計</div><strong>${full(shopping.total)}</strong></div>${shopping.owners.map(a=>`<div class="shopping-metric"><div class="tiny">${esc(a.name)} 的商品</div><strong>${full(a.amount)}</strong></div>`).join('')}</div>`;
       const claimHtml=shopping.claims.length?shopping.claims.map(c=>`<div class="shopping-claim"><b>${esc(c.from)} 應付 ${esc(c.to)} ${full(c.amount)}</b><div>這是個人代購的未確認結算，不與共同旅行開支互相抵銷。</div></div>`).join(''):'<div class="hint">目前沒有個人代購待結算。</div>';
       $('shopping-overview').innerHTML=shopping.receipts.length?shoppingTotals+claimHtml:'<div class="empty">尚未有個人購物紀錄</div>';
