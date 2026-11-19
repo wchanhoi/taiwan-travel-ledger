@@ -472,7 +472,50 @@
       const renderRoutes=routes=>routes.length?'<div class="transfer-list">'+routes.map(r=>`<div class="transfer-route"><span class="transfer-person">${esc(r.from)}</span><span class="transfer-arrow">→</span><span class="transfer-person">${esc(r.to)}</span><span class="transfer-money">${full(r.amount)}</span></div>`).join('')+'</div>':'<div class="hint">共同開支已結清，暫無轉帳需要。</div>';
       const transferIntro=t.unpaid.length?'<div class="transfer-section">目前仍需支付的共同開支</div>'+t.unpaid.map(a=>`<div class="transfer-account"><span>${esc(a.name)}</span><strong>${full(a.amount)}</strong></div>`).join(''):'<div class="hint">目前沒有待付的共同開支。</div>';
       const scenarioAlert=t.requiresRecipientConfirmation?`<div class="transfer-alert"><b>尚未確認歷史付款的收款人：</b>LamEC + Carrie 已登記結算 ${full(data.unallocatedReceipts)}，但尚不知道給了 William 或 Edward。以下兩套轉帳清單只是條件試算，不能同時執行；若款項有拆分，需提供各收款人實收金額才可得出最終清單。</div>`:'';
-      const scenarioHtml='<div class="transfer-section">'+(t.requiresRecipientConfirmation?'兩種不同情況的轉帳清單':'確認後的轉帳清單')+'</div><div class="transfer-scenarios">'+t.scenarios.map((sc,i)=>`<div class="transfer-scenario"><h3>${sc.conditional?'情況 '+(i+1)+'：之前款項全數給 '+esc(sc.recipient):'建議轉帳'}</h3><p>${sc.conditional?'只在 NT$'+fmt(data.unallocatedReceipts)+' 已全部由 '+esc(sc.recipient)+' 收到時才適用。':'根據目前已登記代付與付款資料。'}</p>${renderRoutes(sc.routes)}</div>`).join('')+'</div>';
+      const scenarioHtml='<div class="transfer-section">'+(t.requiresRecipientConfirmation?'兩種不同情況的轉帳清單':'確認後的轉帳清單')+'</div><div class="transfer-scenarios">'+t.scenarios.map((sc,i)=>`<div class="transfer-scenario"><h3>${sc.conditional?'情況 '+(i+1)+'：之前款項全數給 '+esc(sc.recipient):'建議轉帳'}</h3><p>${sc.conditional?'只在 NT
+      const shopping=data.shopping||{total:0,receipts:[],owners:[],claims:[]};
+      const personalTransfers=shopping.claims.length?shopping.claims.map(c=>`<div class="transfer-route"><span class="transfer-person">${esc(c.from)}</span><span class="transfer-arrow">→</span><span class="transfer-person">${esc(c.to)}</span><span class="transfer-money">${full(c.amount)}</span></div>`).join(''):'<div class="hint">沒有個人代購待付款。</div>';
+      const transferPersonal='<div class="transfer-section">個人購物代付 · 獨立結算</div><div class="transfer-list">'+personalTransfers+'</div><div class="hint">Rapha 購物款項與旅行共同開支不互相抵銷。以上金額尚未有個人購物還款紀錄。</div>';
+      $('transfer-content').innerHTML=scenarioAlert+transferIntro+scenarioHtml+transferPersonal;
+      $('transfer-overview').innerHTML=(t.requiresRecipientConfirmation?'<div class="transfer-alert">⚠ 之前一筆結算付款的收款人未確認；請到「誰付誰」分頁查看兩種條件試算。</div>':'')+transferIntro+transferPersonal+'<div class="hint">詳細轉帳對象請點選上方「誰付誰」分頁。僅在收款人確認後，條件試算才可視作正式指示。</div>';
+
+      const shoppingTotals=`<div class="shopping-grid"><div class="shopping-metric"><div class="tiny">購物發票合計</div><strong>${full(shopping.total)}</strong></div>${shopping.owners.map(a=>`<div class="shopping-metric"><div class="tiny">${esc(a.name)} 的商品</div><strong>${full(a.amount)}</strong></div>`).join('')}</div>`;
+      const claimHtml=shopping.claims.length?shopping.claims.map(c=>`<div class="shopping-claim"><b>${esc(c.from)} 應付 ${esc(c.to)} ${full(c.amount)}</b><div>這是個人代購的未確認結算，不與共同旅行開支互相抵銷。</div></div>`).join(''):'<div class="hint">目前沒有個人代購待結算。</div>';
+      $('shopping-overview').innerHTML=shopping.receipts.length?shoppingTotals+claimHtml:'<div class="empty">尚未有個人購物紀錄</div>';
+      $('shopping-summary').innerHTML=shopping.receipts.length?shoppingTotals+claimHtml:'';
+      $('shopping-list').innerHTML=shopping.receipts.map(r=>`<div class="shopping-receipt"><div class="shopping-title">${esc(r.merchant)} · ${esc(r.date)} · ${esc(r.time||'')} · 發票 ${esc(r.receiptNumber)}</div><div class="subtitle">付款人：<b>${esc(r.paidBy)}</b> · 共 ${r.items.length} 件 · ${full(r.total)}</div><div class="table-wrap"><table class="tbl"><thead><tr><th>商品</th><th>歸屬</th><th style="text-align:right">金額</th></tr></thead><tbody>${r.items.map(item=>`<tr><td>${esc(item.description)}</td><td class="shopping-owner">${esc(item.owner)}</td><td class="num">${full(item.amount)}</td></tr>`).join('')}</tbody></table></div></div>`).join('');
+      const items=data.expenses||[];
+      $('latest-expenses').innerHTML=items.length?items.slice(0,4).map(expenseHtml).join(''):'<div class="empty">尚未有開支</div>';
+      $('all-expenses').innerHTML=items.length?items.map(expenseHtml).join(''):'<div class="empty">尚未有開支</div>';
+      $('expense-count').textContent=`${items.length} 筆開支`;
+      $('payment-list').innerHTML=(data.payments||[]).length?(data.payments||[]).map(p=>`<div class="expense-card"><div class="expense-icon">💚</div><div><div class="expense-title">${esc(p.account)}</div><div class="expense-desc">登記日期：${esc(p.date)} · 收款人：${esc(p.receivedBy)}</div><div class="tags"><span class="tag">結算付款</span></div></div><div class="expense-amount">${full(p.amount)}</div></div>`).join(''):'<div class="empty">尚未有付款紀錄</div>';
+      $('syncStatus').textContent=(preview?'⚠ 離線預覽，並非網站最新資料 · ':'✓ 已取得網站資料 · ') + (data.fetchedAt||'');
+      $('footer-live').textContent=preview?'離線預覽資料 · 尚未讀取網站最新記錄':`資料更新日期 ${esc(data.updatedAt||'未提供')} · 資料來源：獨立 JSON 帳本`;
+      $('connection').innerHTML=preview?'<span class="dot" style="background:#edb96e"></span>離線預覽':'<span class="dot"></span>網站資料已同步';
+    }
+    function showAlert(message) {$('alert').textContent=message;$('alert').classList.add('show');}
+    function hideAlert() {$('alert').classList.remove('show');}
+    async function refresh() {
+      const btn=$('refreshBtn');btn.disabled=true;btn.textContent='⟳　載入中…';hideAlert();
+      try {
+        const res=await fetch('./data.json?v='+Date.now(),{cache:'no-store'});
+        if(!res.ok) throw Error('HTTP '+res.status);
+        const raw=await res.json();
+        draw(compute(raw));
+      } catch (error) {
+        draw(compute(embeddedPreview),true);
+        showAlert('目前無法讀取網站最新資料，顯示初始離線預覽（可能不是最新金額）。請確認已部署 index.html 與 data.json，並稍後重試。');
+      } finally {btn.disabled=false;btn.textContent='↻　重新整理';}
+    }
+    document.querySelectorAll('[data-panel]').forEach(b=>b.addEventListener('click',()=>{
+      document.querySelectorAll('[data-panel]').forEach(t=>{t.classList.toggle('active',t===b);t.setAttribute('aria-selected',t===b?'true':'false');});
+      document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===b.dataset.panel));
+    }));
+    $('refreshBtn').addEventListener('click',refresh);
+    draw(compute(embeddedPreview),true);refresh();
+  </script>
+</body>
+</html>+fmt(data.unallocatedReceipts)+' 已全部由 '+esc(sc.recipient)+' 收到時才適用。':'根據目前已登記代付與付款資料。'}</p>${renderRoutes(sc.routes)}</div>`).join('')+'</div>'+(t.requiresRecipientConfirmation?'<div class="hint">如先前已付款項由其中一位代付人收取，他可能需要再轉一部分給另一位。這是既有款項的重新分配，不是新增開支；因此某情況的總轉帳額可能高於其他旅伴尚待付款的金額。</div>':'');
       const shopping=data.shopping||{total:0,receipts:[],owners:[],claims:[]};
       const personalTransfers=shopping.claims.length?shopping.claims.map(c=>`<div class="transfer-route"><span class="transfer-person">${esc(c.from)}</span><span class="transfer-arrow">→</span><span class="transfer-person">${esc(c.to)}</span><span class="transfer-money">${full(c.amount)}</span></div>`).join(''):'<div class="hint">沒有個人代購待付款。</div>';
       const transferPersonal='<div class="transfer-section">個人購物代付 · 獨立結算</div><div class="transfer-list">'+personalTransfers+'</div><div class="hint">Rapha 購物款項與旅行共同開支不互相抵銷。以上金額尚未有個人購物還款紀錄。</div>';
