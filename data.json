@@ -143,6 +143,19 @@
       "paidBy": "Edward",
       "receiptTime": "20:08",
       "receiptSource": "中國信託銀行信用卡交易收據"
+    },
+    {
+      "id": "e10",
+      "date": "2026-11-19",
+      "category": "車費",
+      "description": "回酒店車費",
+      "amountCents": 23800,
+      "participants": [
+        "William",
+        "Edward",
+        "Bob"
+      ],
+      "paidBy": "William"
     }
   ],
   "settlements": [
