@@ -50,7 +50,7 @@
     .acc-name{font-size:14px;font-weight:850;line-height:1.5}.acc-detail{font-size:11px;color:#869693;margin-top:3px}
     .acc-right{text-align:right;white-space:nowrap}.acc-number{font-size:15px;font-weight:900;font-variant-numeric:tabular-nums}
     .pill{font-size:11px;display:inline-flex;align-items:center;gap:5px;padding:5px 9px;border-radius:100px;font-weight:850;margin-top:6px;background:#f2f4f1;color:#728078;}
-    .pill.settled{background:#e6f7ef;color:#19825c}.pill.overpaid{background:#fff2df;color:#a56a29}.pill.partially-paid{background:#fef3df;color:#986b26}
+    .pill.settled{background:#e6f7ef;color:#19825c}.pill.advance{background:#e6f1fb;color:#356d98}.pill.overpaid{background:#fff2df;color:#a56a29}.pill.partially-paid{background:#fef3df;color:#986b26}
     .hint {border-radius:13px;background:#f1f7f4;padding:12px 14px;font-size:12px;color:#58746e;line-height:1.6;margin-top:22px;}
     .donutbox{display:flex;align-items:center;justify-content:center;margin:26px 0 25px;}
     .donut{width:188px;height:188px;border-radius:50%;background:conic-gradient(#1b736f 0% 69.3%,#e9a85e 69.3% 95.37%,#8eb7bb 95.37% 100%);display:grid;place-items:center;}
@@ -88,7 +88,7 @@
     <div class="stat-grid" aria-label="帳目摘要">
       <div class="stat"><div><div class="label"><span class="circle"></span>旅程累計支出</div><div class="sub">2026年11月 · 新台幣</div></div><div class="number"><small>NT$</small><span id="total">11,291</span></div></div>
       <div class="stat"><div class="label"><span class="circle blue"></span>已登記結算</div><div class="number"><small>NT$</small><span id="paid">3,268.63</span></div><div class="sub">旅伴已付款項</div></div>
-      <div class="stat"><div class="label"><span class="circle orange"></span>旅伴尚待結算</div><div class="number"><small>NT$</small><span id="remaining">2,767.47</span></div><div class="sub">已按實際代付、個人分攤及已登記付款計算</div></div>
+      <div class="stat"><div class="label"><span class="circle orange"></span>其他旅伴待付 William</div><div class="number"><small>NT$</small><span id="remaining">2,767.47</span></div><div class="sub">Bob 與 LamEC + Carrie 待付 William 的金額</div></div>
     </div>
     <div id="alert" class="alert" role="status"></div>
     <nav class="tabs" role="tablist" aria-label="帳目分類">
@@ -101,7 +101,7 @@
     </nav>
     <section class="panel active" id="overview" role="tabpanel">
       <div class="grid2">
-        <div class="card"><div class="card-head"><h2>旅伴結算狀態</h2><span class="subtitle">4 個結算帳戶 · 5 位旅伴</span></div><div id="accounts-list"></div><div class="hint">ℹ︎ LamEC + Carrie 合併結算，但每筆消費仍按兩個人計算。8 筆共同開支由 William 與 Edward 分別代付。兩人的應收款須待確認 LamEC + Carrie 已付款項的實際收款人後，才能作最後分配。</div></div>
+        <div class="card"><div class="card-head"><h2>旅伴結算狀態</h2><span class="subtitle">4 個結算帳戶 · 5 位旅伴</span></div><div id="accounts-list"></div><div class="hint">ℹ︎ LamEC + Carrie 合併結算，但每筆消費仍按兩個人計算。8 筆共同開支由 William 與 Edward 分別代付。LamEC + Carrie 已付款項由 William 收取；William 統一向其他旅伴收款，再結算 Edward。</div></div>
         <div class="card"><div class="card-head"><h2>開支分佈</h2><span class="subtitle">按類別</span></div><div class="donutbox"><div class="donut" id="donut" role="img" aria-label="各類開支比例"><div class="donut-center"><strong id="donut-total">11,291</strong><small>總消費 NT$</small></div></div></div><div class="legend" id="legend"></div></div>
       </div>
       <div class="section-row"><h2>誰要付款給誰？</h2><span class="muted">共同開支與個人購物分開結算</span></div>
@@ -112,450 +112,231 @@
       <div class="card" id="latest-expenses"></div>
     </section>
     <section class="panel" id="transfer" role="tabpanel"><div class="card"><div class="card-head"><h2>轉帳建議 · 誰付誰</h2><span class="subtitle">按已登記代付及結算資料自動計算</span></div><div id="transfer-content"></div></div></section>
-    <section class="panel" id="accounts" role="tabpanel"><div class="card"><div class="card-head"><h2>各人應分攤及付款</h2><span class="subtitle">LamEC + Carrie 合併顯示</span></div><div class="table-wrap"><table class="tbl"><thead><tr><th>帳戶</th><th style="text-align:right">應分攤</th><th style="text-align:right">代付開支</th><th style="text-align:right">已付結算</th><th style="text-align:right">淨差額</th><th>狀態</th></tr></thead><tbody id="account-table"></tbody></table></div><div class="hint">由 William 和 Edward 分別先代付開支。淨差額會扣除個人消費份額、已代付金額及已登記付款；正數是待付、負數是應收。LamEC + Carrie 已付款 NT$3,268.63 的收款人尚待核對，因此 William／Edward 的應收數字未扣除這筆未指定收款人的款項。</div></div></section>
+    <section class="panel" id="accounts" role="tabpanel"><div class="card"><div class="card-head"><h2>各人應分攤及付款</h2><span class="subtitle">LamEC + Carrie 合併顯示</span></div><div class="table-wrap"><table class="tbl"><thead><tr><th>帳戶</th><th style="text-align:right">應分攤</th><th style="text-align:right">代付開支</th><th style="text-align:right">已付結算</th><th style="text-align:right">淨差額</th><th>狀態</th></tr></thead><tbody id="account-table"></tbody></table></div><div class="hint">由 William 和 Edward 分別先代付開支。淨差額會扣除個人消費份額、已代付金額及已登記付款；正數是待付、負數是應收。LamEC + Carrie 已支付 NT$3,268.63 給 William。正數為淨需付款、負數為淨應收；William 會統一收款並轉給 Edward，轉帳完成前只會標示為待付款。</div></div></section>
     <section class="panel" id="expenses" role="tabpanel"><div class="card"><div class="card-head"><h2>所有支出明細</h2><span class="subtitle" id="expense-count">8 筆開支</span></div><div id="all-expenses"></div></div></section>
     <section class="panel" id="shopping" role="tabpanel"><div class="card"><div class="card-head"><h2>個人購物 · 發票及付款人</h2><span class="subtitle">與共同旅行開支獨立計算</span></div><div id="shopping-summary"></div><div id="shopping-list"></div><div class="hint">個人商品由指定持有人承擔，付款人可以不同。本頁不會將個人購物平均分攤給全體旅伴，也不會自動與共同車費互相抵銷。</div></div></section>
-    <section class="panel" id="payments" role="tabpanel"><div class="card"><div class="card-head"><h2>已登記的結算付款</h2><span class="subtitle">與消費代付分開記錄</span></div><div class="settlement" id="settlement-note">✅ <b>LamEC + Carrie 已付清</b>（按目前登記的開支）。新的共同開支加入後，狀態會依最新分攤額重新計算。</div><div id="payment-list"></div><div class="hint">付款紀錄是團友之間的結算紀錄，並非各筆消費的原始付款人。實際收款人、付款日期可在確認後補充。</div></div></section>
+    <section class="panel" id="payments" role="tabpanel"><div class="card"><div class="card-head"><h2>已登記的結算付款</h2><span class="subtitle">與消費代付分開記錄</span></div><div class="settlement" id="settlement-note">✅ <b>LamEC + Carrie 已付清</b>（按目前登記的開支）。新的共同開支加入後，狀態會依最新分攤額重新計算。</div><div id="payment-list"></div><div class="hint">付款紀錄是團友之間的結算紀錄，並非各筆消費的原始付款人。已確認先前結算由 William 收款；未完成的新付款不會自動列入已付紀錄。</div></div></section>
     <div class="footer">🇹🇼 2026 台灣旅行共同記帳 · 獨立網站版本<br><span id="footer-live">資料來源：網站記帳資料（data.json）</span></div>
   </main>
   <script>
-    // Independent hosted website. The only updateable source of truth is data.json.
-    // No Google Sheets, API keys, login credentials, or browser storage required.
-    const embeddedPreview = {
-      "version": 1,
-      "updatedAt": "2026-11-19",
-      "currency": "TWD",
-      "travelers": [
-        "William",
-        "Edward",
-        "Bob",
-        "LamEC",
-        "Carrie"
-      ],
-      "householdAccounts": [
-        {
-          "name": "LamEC + Carrie",
-          "members": [
-            "LamEC",
-            "Carrie"
-          ]
+
+  // Independent static site: data.json is the source of truth.
+  // All accounting uses integer cents. Shopping is kept separate.
+  const embeddedPreview = {"version":1,"updatedAt":"2026-11-19","currency":"TWD","travelers":["William","Edward","Bob","LamEC","Carrie"],"householdAccounts":[{"name":"LamEC + Carrie","members":["LamEC","Carrie"]}],"expenses":[{"id":"e1","date":"2026-11-18","category":"機場接送","description":"機場接送","amountCents":280000,"participants":["William","Edward","Bob"],"paidBy":"William"},{"id":"e2","date":"2026-11-18","category":"餐飲","description":"18號晚餐","amountCents":744700,"participants":["William","Edward","Bob","LamEC","Carrie"],"paidBy":"Edward"},{"id":"e3","date":"2026-11-18","category":"車費","description":"車費 ①","amountCents":22900,"participants":["William","Bob","LamEC","Carrie"],"paidBy":"William"},{"id":"e4","date":"2026-11-18","category":"車費","description":"車費 ②","amountCents":26300,"participants":["William","LamEC","Carrie"],"paidBy":"William"},{"id":"e5","date":"2026-11-19","category":"車費","description":"去 SOGO 車費","amountCents":15400,"participants":["William","Bob","LamEC","Carrie"],"paidBy":"William"},{"id":"e6","date":"2026-11-19","category":"車費","description":"去新光三越車費","amountCents":13000,"participants":["Edward","William","Bob"],"paidBy":"William"},{"id":"e7","date":"2026-11-19","category":"車費","description":"去 Swork 車費","amountCents":15000,"participants":["Edward","William","Bob"],"paidBy":"William"},{"id":"e8","date":"2026-11-19","category":"車費","description":"去按摩車費","amountCents":11800,"participants":["William","LamEC","Carrie"],"paidBy":"William"}],"settlements":[{"id":"p1","recordedAt":"2026-11-19","account":"LamEC + Carrie","amountCents":326863,"receivedBy":"William","note":"LamEC + Carrie 的已付款 NT$3,268.63 由 William 收取；William 會將應付 Edward 的共同開支款項集中轉交，未確認實際轉帳前不記為已付 Edward。"}],"shoppingReceipts":[{"id":"rapha-20261119-ht54441342","date":"2026-11-19","time":"13:08","merchant":"Rapha","receiptNumber":"HT-54441342","paidBy":"Carrie","currency":"TWD","items":[{"description":"Men's Brevet Element Cargo Bib Shorts","amountCents":476000,"owner":"William"},{"description":"Women's Pro Team LS Lightweight Jersey III","amountCents":440000,"owner":"Carrie"},{"description":"Women's Pro Team Gore-Tex LW Rain Jacket II","amountCents":1040000,"owner":"Carrie"},{"description":"Clubhouse Essentials Case","amountCents":140000,"owner":"William"},{"description":"Brevet Cap","amountCents":140000,"owner":"William"},{"description":"Clubhouse Cap","amountCents":114000,"owner":"William"},{"description":"Women's Pro Team Shadow Gilet","amountCents":776000,"owner":"Carrie"},{"description":"Women's Pro Team LS Lightweight Jersey III","amountCents":440000,"owner":"Carrie"},{"description":"Women's Pro Team Long Sleeve Midweight Jersey II","amountCents":529600,"owner":"Carrie"}],"totalCents":4095600,"note":"收據上黃色標記4件屬William；其他5件屬Carrie。由Carrie支付整張發票。個人購物，不納入共同旅行分攤。"}],"defaultPaidBy":"William","settlementRouting":{"collector":"William","forwardTo":"Edward","description":"由 William 統一收取其他團友的共同開支結算款，並集中轉帳給 Edward；未完成的轉帳只列為待付款。"}};
+  const $ = id => document.getElementById(id);
+  const currency = cents => 'NT$' + (cents/100).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const number = cents => (cents/100).toLocaleString('en-US',{minimumFractionDigits:cents%100===0?0:2,maximumFractionDigits:2});
+  const escapeHTML = value => String(value==null?'':value).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});
+  const fmtDate = value => escapeHTML(value||'未記錄');
+  const catEmoji = cat => /餐/.test(cat)?'🍜':/車/.test(cat)?'🚕':/機場/.test(cat)?'✈️':/住/.test(cat)?'🏨':'🧾';
+  const colors = ['#196f6b','#e8aa60','#83b5b3','#8a93c7','#b7a693','#bad8bf'];
+  const avatars=['W','E','B','L+C'];
+
+  function calculate(data){
+    if(!data || !Array.isArray(data.travelers) || !Array.isArray(data.expenses) || !Array.isArray(data.settlements)) throw Error('資料格式不正確');
+    const members=new Set(data.travelers);
+    const households=data.householdAccounts||[];
+    const grouped=new Set(households.flatMap(h=>h.members));
+    const defs=data.travelers.filter(n=>!grouped.has(n)).map(n=>({name:n,members:[n]}))
+      .concat(households.map(h=>({name:h.name,members:h.members})));
+    const findAccount=name=>defs.find(a=>a.name===name || a.members.includes(name))?.name||null;
+    const shares=Object.fromEntries(data.travelers.map(n=>[n,0]));
+    const categories=new Map();
+    const expenseIds=new Set();
+    let expenseTotal=0;
+    const paidFor=Object.fromEntries(defs.map(a=>[a.name,0]));
+    for(const e of data.expenses){
+      if(expenseIds.has(e.id))throw Error('支出 ID 重複');
+      expenseIds.add(e.id);
+      if(!Number.isSafeInteger(e.amountCents)||e.amountCents<0)throw Error('支出金額不正確');
+      if(!Array.isArray(e.participants)||!e.participants.length||new Set(e.participants).size!==e.participants.length||e.participants.some(n=>!members.has(n)))throw Error('支出參與者不正確');
+      const participants=data.travelers.filter(n=>e.participants.includes(n));
+      const base=Math.floor(e.amountCents/participants.length), extra=e.amountCents%participants.length;
+      participants.forEach((n,i)=>shares[n]+=base+(i<extra?1:0));
+      const payer=findAccount(e.paidBy || data.defaultPaidBy);
+      if(!payer)throw Error('支出付款人不正確');
+      paidFor[payer]+=e.amountCents;
+      expenseTotal+=e.amountCents;
+      categories.set(e.category,(categories.get(e.category)||0)+e.amountCents);
+    }
+    const sent=Object.fromEntries(defs.map(a=>[a.name,0]));
+    const received=Object.fromEntries(defs.map(a=>[a.name,0]));
+    let unknownRecipient=0,settlementTotal=0;
+    for(const p of data.settlements){
+      if(!Number.isSafeInteger(p.amountCents)||p.amountCents<0)throw Error('結算金額不正確');
+      const from=findAccount(p.account);
+      if(!from)throw Error('結算付款人不正確');
+      const to=p.receivedBy?findAccount(p.receivedBy):null;
+      sent[from]+=p.amountCents;settlementTotal+=p.amountCents;
+      if(to)received[to]+=p.amountCents;
+      else unknownRecipient+=p.amountCents;
+    }
+    const accounts=defs.map(a=>{
+      const due=a.members.reduce((n,p)=>n+shares[p],0);
+      const advanced=paidFor[a.name]||0, paid=sent[a.name]||0, got=received[a.name]||0;
+      return {name:a.name,members:a.members,due,advanced,paid,received:got,net:due-advanced-paid+got};
+    });
+    const dueSum=accounts.reduce((n,a)=>n+a.due,0);
+    if(dueSum!==expenseTotal)throw Error('支出與分攤總額不平衡');
+    const collector=findAccount(data.settlementRouting?.collector)||'William';
+    const forwardTo=findAccount(data.settlementRouting?.forwardTo)||'Edward';
+    const accountSum=accounts.reduce((n,a)=>n+a.net,0);
+    if(unknownRecipient===0 && accountSum!==0)throw Error('結算淨額不平衡');
+    const owedToCollector=accounts.filter(a=>a.name!==collector&&a.net>0).reduce((n,a)=>n+a.net,0);
+    const routes=[];
+    if(unknownRecipient===0){
+      for(const a of accounts.filter(a=>a.name!==collector&&a.net>0)){
+        routes.push({from:a.name,to:collector,amount:a.net,kind:'collect'});
+      }
+      for(const a of accounts.filter(a=>a.name!==collector&&a.net<0).sort((a,b)=>(a.name===forwardTo?-1:0)-(b.name===forwardTo?-1:0))){
+        routes.push({from:collector,to:a.name,amount:-a.net,kind:'forward'});
+      }
+    }
+    // Conservation check: pending transfers must zero each account's net.
+    if(unknownRecipient===0){
+      const outstanding=Object.fromEntries(accounts.map(a=>[a.name,a.net]));
+      for(const r of routes){outstanding[r.from]-=r.amount;outstanding[r.to]+=r.amount;}
+      if(Object.values(outstanding).some(c=>c!==0))throw Error('轉帳路線未能結清');
+    }
+    const shoppingReceipts=data.shoppingReceipts||[];
+    const shoppingOwnerTotal={};
+    const personalClaims=new Map();
+    let shoppingTotal=0;
+    for(const r of shoppingReceipts){
+      const subtotal=r.items.reduce((n,i)=>n+i.amountCents,0);
+      if(subtotal!==r.totalCents)throw Error('購物發票金額不符');
+      shoppingTotal+=subtotal;
+      for(const item of r.items){
+        shoppingOwnerTotal[item.owner]=(shoppingOwnerTotal[item.owner]||0)+item.amountCents;
+        if(item.owner!==r.paidBy){
+          const key=item.owner+'|'+r.paidBy;
+          personalClaims.set(key,(personalClaims.get(key)||0)+item.amountCents);
         }
-      ],
-      "expenses": [
-        {
-          "id": "e1",
-          "date": "2026-11-18",
-          "category": "機場接送",
-          "description": "機場接送",
-          "amountCents": 280000,
-          "participants": [
-            "William",
-            "Edward",
-            "Bob"
-          ],
-          "paidBy": "William"
-        },
-        {
-          "id": "e2",
-          "date": "2026-11-18",
-          "category": "餐飲",
-          "description": "18號晚餐",
-          "amountCents": 744700,
-          "participants": [
-            "William",
-            "Edward",
-            "Bob",
-            "LamEC",
-            "Carrie"
-          ],
-          "paidBy": "Edward"
-        },
-        {
-          "id": "e3",
-          "date": "2026-11-18",
-          "category": "車費",
-          "description": "車費 ①",
-          "amountCents": 22900,
-          "participants": [
-            "William",
-            "Bob",
-            "LamEC",
-            "Carrie"
-          ],
-          "paidBy": "William"
-        },
-        {
-          "id": "e4",
-          "date": "2026-11-18",
-          "category": "車費",
-          "description": "車費 ②",
-          "amountCents": 26300,
-          "participants": [
-            "William",
-            "LamEC",
-            "Carrie"
-          ],
-          "paidBy": "William"
-        },
-        {
-          "id": "e5",
-          "date": "2026-11-19",
-          "category": "車費",
-          "description": "去 SOGO 車費",
-          "amountCents": 15400,
-          "participants": [
-            "William",
-            "Bob",
-            "LamEC",
-            "Carrie"
-          ],
-          "paidBy": "William"
-        },
-        {
-          "id": "e6",
-          "date": "2026-11-19",
-          "category": "車費",
-          "description": "去新光三越車費",
-          "amountCents": 13000,
-          "participants": [
-            "Edward",
-            "William",
-            "Bob"
-          ],
-          "paidBy": "William"
-        },
-        {
-          "id": "e7",
-          "date": "2026-11-19",
-          "category": "車費",
-          "description": "去 Swork 車費",
-          "amountCents": 15000,
-          "participants": [
-            "Edward",
-            "William",
-            "Bob"
-          ],
-          "paidBy": "William"
-        },
-        {
-          "id": "e8",
-          "date": "2026-11-19",
-          "category": "車費",
-          "description": "去按摩車費",
-          "amountCents": 11800,
-          "participants": [
-            "William",
-            "LamEC",
-            "Carrie"
-          ],
-          "paidBy": "William"
-        }
-      ],
-      "settlements": [
-        {
-          "id": "p1",
-          "recordedAt": "2026-11-19",
-          "account": "LamEC + Carrie",
-          "amountCents": 326863,
-          "receivedBy": null,
-          "note": "按使用者確認：已付清截至目前的分攤。實際付款日期、方式及收款人尚待核對。"
-        }
-      ],
-      "shoppingReceipts": [
-        {
-          "id": "rapha-20261119-ht54441342",
-          "date": "2026-11-19",
-          "time": "13:08",
-          "merchant": "Rapha",
-          "receiptNumber": "HT-54441342",
-          "paidBy": "Carrie",
-          "currency": "TWD",
-          "items": [
-            {
-              "description": "Men's Brevet Element Cargo Bib Shorts",
-              "amountCents": 476000,
-              "owner": "William"
-            },
-            {
-              "description": "Women's Pro Team LS Lightweight Jersey III",
-              "amountCents": 440000,
-              "owner": "Carrie"
-            },
-            {
-              "description": "Women's Pro Team Gore-Tex LW Rain Jacket II",
-              "amountCents": 1040000,
-              "owner": "Carrie"
-            },
-            {
-              "description": "Clubhouse Essentials Case",
-              "amountCents": 140000,
-              "owner": "William"
-            },
-            {
-              "description": "Brevet Cap",
-              "amountCents": 140000,
-              "owner": "William"
-            },
-            {
-              "description": "Clubhouse Cap",
-              "amountCents": 114000,
-              "owner": "William"
-            },
-            {
-              "description": "Women's Pro Team Shadow Gilet",
-              "amountCents": 776000,
-              "owner": "Carrie"
-            },
-            {
-              "description": "Women's Pro Team LS Lightweight Jersey III",
-              "amountCents": 440000,
-              "owner": "Carrie"
-            },
-            {
-              "description": "Women's Pro Team Long Sleeve Midweight Jersey II",
-              "amountCents": 529600,
-              "owner": "Carrie"
-            }
-          ],
-          "totalCents": 4095600,
-          "note": "收據上黃色標記4件屬William；其他5件屬Carrie。由Carrie支付整張發票。個人購物，不納入共同旅行分攤。"
-        }
-      ],
-      "defaultPaidBy": "William"
+      }
+    }
+    const shoppingClaims=[...personalClaims.entries()].map(([key,amount])=>({from:key.split('|')[0],to:key.split('|')[1],amount}));
+    return {
+      original:data,accounts,shares,expenseTotal,settlementTotal,unknownRecipient,owedToCollector,collector,forwardTo,routes,
+      categories:[...categories.entries()].map(([name,amount])=>({name,amount})).sort((a,b)=>b.amount-a.amount),
+      shoppingReceipts,shoppingTotal,shoppingOwnerTotal,shoppingClaims
     };
-    const $ = x => document.getElementById(x);
-    const fmt = v => Number(v||0).toLocaleString('en-US',{minimumFractionDigits: (Math.round((v||0)*100)%100===0?0:2),maximumFractionDigits:2});
-    const full = v => 'NT$' + Number(v||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-    const esc = s => String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    const colors = ['#196f6b','#e8aa60','#83b5b3','#8a93c7','#b7a693','#bad8bf'];
-    const peopleAbbr = ['W','E','B','L+C'];
-    const labelStatus = s => ({settled:'✓ 已結清',overpaid:'需核對超付','partially-paid':'部分結算',unconfirmed:'待結算',advance:'↗ 應收待核對'}[s]||'待核對');
-    function emoji(cat) {return cat.includes('餐')?'🍜':cat.includes('車')?'🚕':cat.includes('機場')?'✈️':cat.includes('住')?'🏨':'🧾';}
-    function checkData(data) {
-      if(!data || !Array.isArray(data.expenses) || !Array.isArray(data.travelers) || !Array.isArray(data.settlements)) throw Error('資料格式不正確');
-      const names = new Set(data.travelers);
-      const ids = new Set();
-      for(const e of data.expenses){
-        if(ids.has(e.id)) throw Error('支出 ID 重複'); ids.add(e.id);
-        if(!Number.isSafeInteger(e.amountCents)||e.amountCents<0) throw Error('支出金額不正確');
-        if(!Array.isArray(e.participants)||e.participants.length===0||new Set(e.participants).size!==e.participants.length||e.participants.some(n=>!names.has(n))) throw Error('參與者不正確');
-      }
-      for(const p of data.settlements){if(!Number.isSafeInteger(p.amountCents) || p.amountCents<0) throw Error('付款金額不正確');}
-      for(const receipt of data.shoppingReceipts||[]){
-        if(!Array.isArray(receipt.items) || receipt.items.length===0 || !names.has(receipt.paidBy)) throw Error('購物發票資料不正確');
-        if(!Number.isSafeInteger(receipt.totalCents)||receipt.totalCents<0)throw Error('購物發票總額不正確');
-        let sum=0;
-        for(const item of receipt.items){if(!names.has(item.owner)||!Number.isSafeInteger(item.amountCents)||item.amountCents<0)throw Error('個人購物商品資料不正確');sum+=item.amountCents;}
-        if(sum!==receipt.totalCents)throw Error('購物發票商品與總額不符');
-      }
-      return data;
-    }
-    function compute(raw){
-      checkData(raw);
-      const travelers=raw.travelers;
-      const households=raw.householdAccounts||[];
-      const grouped=new Set(households.flatMap(g=>g.members));
-      const individuals=travelers.filter(t=>!grouped.has(t)).map(name=>({name,people:1,members:[name]}));
-      const accountDefs=[...individuals,...households.map(h=>({name:h.name,people:h.members.length,members:h.members}))];
-      const shares=Object.fromEntries(travelers.map(t=>[t,0]));
-      const cats=new Map();
-      let totalCents=0;
-      for(const e of raw.expenses){
-        const amount=e.amountCents, n=e.participants.length;
-        const base=Math.floor(amount/n), extra=amount%n;
-        // Participants always appear in the fixed traveler order. Residual cents
-        // are assigned to the first participating traveler(s), once per expense.
-        const split=travelers.filter(t=>e.participants.includes(t));
-        split.forEach((name,i)=>{shares[name]+=base+(i<extra?1:0)});
-        totalCents+=amount;cats.set(e.category,(cats.get(e.category)||0)+amount);
-      }
+  }
 
-      // Track original expenses separately from transfers between travelers.
-      const paymentsByAccount={};
-      const receivedByAccount={};
-      let unallocatedReceiptsCents=0;
-      for(const p of raw.settlements){
-        paymentsByAccount[p.account]=(paymentsByAccount[p.account]||0)+p.amountCents;
-        const recipient=accountDefs.find(a=>a.name===p.receivedBy||a.members.includes(p.receivedBy));
-        if(recipient) receivedByAccount[recipient.name]=(receivedByAccount[recipient.name]||0)+p.amountCents;
-        else unallocatedReceiptsCents+=p.amountCents;
-      }
-      const advancesByAccount=Object.fromEntries(accountDefs.map(a=>[a.name,raw.expenses.filter(e=>a.members.includes(e.paidBy)).reduce((sum,e)=>sum+e.amountCents,0)]));
-      const accounts=accountDefs.map(a=>{
-        const dueCents=a.members.reduce((sum,m)=>sum+(shares[m]||0),0);
-        const paidCents=paymentsByAccount[a.name]||0;
-        const receivedCents=receivedByAccount[a.name]||0;
-        const advancedCents=advancesByAccount[a.name]||0;
-        // Positive balance means this account must pay; negative means creditor.
-        // Transfers with an unknown recipient are NOT assigned to any creditor.
-        const balanceCents=dueCents-advancedCents-paidCents+receivedCents;
-        return {...a,
-          due:dueCents/100,paid:paidCents/100,received:receivedCents/100,
-          advanced:advancedCents/100,balance:balanceCents/100,
-          status:balanceCents<0?'advance':balanceCents===0?'settled':paidCents>0?'partially-paid':'unconfirmed'};
-      });
-      const paidCents=raw.settlements.reduce((sum,p)=>sum+p.amountCents,0);
-      const shoppingReceipts=raw.shoppingReceipts||[];
-      const ownedShopping=new Map();
-      const personalClaims=new Map();
-      for(const r of shoppingReceipts){for(const item of r.items){
-        ownedShopping.set(item.owner,(ownedShopping.get(item.owner)||0)+item.amountCents);
-        if(item.owner!==r.paidBy){const key=item.owner+'|'+r.paidBy;personalClaims.set(key,(personalClaims.get(key)||0)+item.amountCents);}
-      }}
-      const shopping={
-        total:shoppingReceipts.reduce((sum,r)=>sum+r.totalCents,0)/100,
-        receipts:shoppingReceipts.map(r=>({...r,total:r.totalCents/100,items:r.items.map(item=>({...item,amount:item.amountCents/100}))})),
-        owners:[...ownedShopping.entries()].map(([name,amount])=>({name,amount:amount/100})),
-        claims:[...personalClaims.entries()].map(([key,amount])=>({from:key.split('|')[0],to:key.split('|')[1],amount:amount/100}))
-      };
-      const dueCents=accounts.reduce((sum,a)=>sum+Math.round(a.due*100),0);
-      if(dueCents!==totalCents) throw Error('帳目分攤總額與消費總額不符');
-      const remainingCents=accounts.reduce((sum,a)=>sum+Math.max(0,Math.round(a.balance*100)),0);
-      const creditorCandidates=accounts.filter(a=>a.advanced>0).map(a=>a.name);
-      const settlementScenarios=unallocatedReceiptsCents===0
-        ? [suggestedTransfers(accounts,0,null)]
-        : creditorCandidates.map(name=>suggestedTransfers(accounts,unallocatedReceiptsCents,name));
-      const transferOverview={
-        outstanding:remainingCents/100,
-        unpaid:accounts.filter(a=>a.balance>0).map(a=>({name:a.name,amount:a.balance})),
-        scenarios:settlementScenarios,
-        requiresRecipientConfirmation:unallocatedReceiptsCents>0
-      };
-      return {
-        source:'live',updatedAt:raw.updatedAt,remaining:remainingCents/100,unallocatedReceipts:unallocatedReceiptsCents/100,transferOverview,
-        fetchedAt:new Date().toLocaleString('zh-TW',{timeZone:'Asia/Taipei',hour12:false}),
-        total:totalCents/100,paid:paidCents/100,accounts,shopping,
-        expenses:[...raw.expenses].reverse().map(e=>({date:e.date,category:e.category,description:e.description,amount:e.amountCents/100,participants:e.participants,paidBy:e.paidBy??'未提供'})),
-        payments:[...raw.settlements].reverse().map(p=>({date:p.recordedAt,account:p.account,amount:p.amountCents/100,receivedBy:p.receivedBy??'未提供',note:p.note})),
-        categories:Array.from(cats,(entry)=>({name:entry[0],amount:entry[1]/100})).sort((a,b)=>b.amount-a.amount)
-      };
-    }
-    function suggestedTransfers(accountBalances,unallocatedCents,recipient){
-      const nodes=accountBalances.map(a=>({name:a.name,cents:Math.round(a.balance*100)+(a.name===recipient?unallocatedCents:0)}));
-      if(nodes.reduce((sum,a)=>sum+a.cents,0)!==0)throw Error('轉帳結算不平衡，請核對付款收款人');
-      const debtors=nodes.filter(a=>a.cents>0).sort((a,b)=>b.cents-a.cents).map(a=>({...a}));
-      const creditors=nodes.filter(a=>a.cents<0).map(a=>({name:a.name,cents:-a.cents})).sort((a,b)=>b.cents-a.cents);
-      const routes=[];
-      let di=0,ci=0;
-      while(di<debtors.length&&ci<creditors.length){
-        const cents=Math.min(debtors[di].cents,creditors[ci].cents);
-        if(cents<=0)throw Error('轉帳分配失敗');
-        routes.push({from:debtors[di].name,to:creditors[ci].name,amount:cents/100});
-        debtors[di].cents-=cents;creditors[ci].cents-=cents;
-        if(debtors[di].cents===0)di++;
-        if(creditors[ci].cents===0)ci++;
-      }
-      if(di!==debtors.length||ci!==creditors.length)throw Error('轉帳未完全配平');
-      return {recipient,conditional:unallocatedCents>0,routes};
-    }
-    function expenseHtml(item) {return `<div class="expense-card"><div class="expense-icon">${emoji(item.category)}</div><div><div class="expense-title">${esc(item.description)}</div><div class="expense-desc">${esc(item.date)} · ${esc(item.category)} · ${item.participants.length} 人分攤 · 付款：${esc(item.paidBy)}</div><div class="tags">${item.participants.map(p=>`<span class="tag">${esc(p)}</span>`).join('')}</div></div><div class="expense-amount">${full(item.amount)}</div></div>`;}
-    function draw(data,preview=false) {
-      const total=Number(data.total)||0,paid=Number(data.paid)||0;
-      $('total').textContent=fmt(total);$('paid').textContent=fmt(paid);$('remaining').textContent=fmt(data.remaining ?? (total-paid));$('donut-total').textContent=fmt(total);
-      const acc=data.accounts||[];
+  function routeHtml(routes,emptyText){
+    if(!routes.length)return '<div class="hint">'+escapeHTML(emptyText||'目前沒有待轉帳款項')+'</div>';
+    return '<div class="transfer-list">'+routes.map(r=>
+      '<div class="transfer-route"><span class="transfer-person">'+escapeHTML(r.from)+'</span>'+
+      '<span class="transfer-arrow">→</span><span class="transfer-person">'+escapeHTML(r.to)+'</span>'+
+      '<span class="transfer-money">'+currency(r.amount)+'</span></div>'
+    ).join('')+'</div>';
+  }
+  function expenseHtml(e){
+    return '<div class="expense-card"><div class="expense-icon">'+catEmoji(e.category)+'</div>'+
+      '<div><div class="expense-title">'+escapeHTML(e.description)+'</div>'+
+      '<div class="expense-desc">'+fmtDate(e.date)+' · '+escapeHTML(e.category)+' · '+e.participants.length+
+      '人分攤 · 付款：'+escapeHTML(e.paidBy)+'</div>'+
+      '<div class="tags">'+e.participants.map(n=>'<span class="tag">'+escapeHTML(n)+'</span>').join('')+'</div></div>'+
+      '<div class="expense-amount">'+currency(e.amountCents)+'</div></div>';
+  }
+  function shoppingHtml(model){
+    if(!model.shoppingReceipts.length)return '<div class="empty">尚未有個人購物紀錄</div>';
+    let result='<div class="shopping-grid"><div class="shopping-metric"><div class="tiny">購物發票總額</div><strong>'+currency(model.shoppingTotal)+'</strong></div>';
+    for(const [person,amount] of Object.entries(model.shoppingOwnerTotal))
+      result+='<div class="shopping-metric"><div class="tiny">'+escapeHTML(person)+' 商品</div><strong>'+currency(amount)+'</strong></div>';
+    result+='</div>';
+    result+='<div class="shopping-claim"><b>個人購物不與共同開支自動抵銷</b><div>'+
+      model.shoppingClaims.map(c=>escapeHTML(c.from)+' 應付 '+escapeHTML(c.to)+' '+currency(c.amount)).join('；')+'</div></div>';
+    return result;
+  }
+  function show(model,offline){
+    const data=model.original;
+    $('total').textContent=number(model.expenseTotal);
+    $('paid').textContent=number(model.settlementTotal);
+    $('remaining').textContent=number(model.owedToCollector);
+    $('donut-total').textContent=number(model.expenseTotal);
+    const acc=model.accounts;
+    $('accounts-list').innerHTML=acc.map((a,i)=>{
+      let status=a.name===model.collector?'統一收款／轉付':a.net<0?'應收款':a.net>0?'待付款':'已結清';
+      let cls=a.net===0?'settled':a.net<0?'advance':'unconfirmed';
+      return '<div class="account"><div class="avatar a'+(i+1)+'">'+(avatars[i]||'•')+'</div>'+
+        '<div><div class="acc-name">'+escapeHTML(a.name)+'</div><div class="acc-detail">分攤 '+currency(a.due)+' · 代付 '+currency(a.advanced)+' · 已付結算 '+currency(a.paid)+'</div></div>'+
+        '<div class="acc-right"><div class="acc-number">'+currency(Math.abs(a.net))+'</div><span class="pill '+cls+'">'+status+'</span></div></div>';
+    }).join('');
+    $('account-table').innerHTML=acc.map(a=>
+      '<tr><td class="name">'+escapeHTML(a.name)+'<div class="smallsub">'+(a.members.length===2?'兩人合併':'個人')+'</div></td>'+
+      '<td class="num">'+currency(a.due)+'</td><td class="num">'+currency(a.advanced)+'</td>'+
+      '<td class="num">'+currency(a.paid)+'</td><td class="num">'+
+      (a.name===model.collector?'代收／待轉 ':a.net<0?'應收 ':a.net>0?'待付 ':'已結清 ')+currency(Math.abs(a.net))+'</td>'+
+      '<td><span class="pill '+(a.net<0?'advance':a.net===0?'settled':'unconfirmed')+'">'+
+      (a.name===model.collector?'統一結算':a.net<0?'應收':a.net>0?'待付':'已結清')+'</span></td></tr>'
+    ).join('');
+    const cats=model.categories.filter(c=>c.amount>0);
+    const totalCats=cats.reduce((n,c)=>n+c.amount,0);
+    let p=0;const stops=[];
+    cats.forEach((c,i)=>{const next=p+(totalCats?c.amount/totalCats*100:0);stops.push(colors[i%colors.length]+' '+p.toFixed(3)+'% '+next.toFixed(3)+'%');p=next;});
+    $('donut').style.background=stops.length?'conic-gradient('+stops.join(',')+')':'#eef3ef';
+    $('donut').setAttribute('aria-label',cats.map(c=>escapeHTML(c.name)+' '+currency(c.amount)).join('，'));
+    $('legend').innerHTML=cats.map((c,i)=>'<div class="legend-row"><span class="legend-left"><span class="circle" style="background:'+colors[i%colors.length]+'"></span>'+escapeHTML(c.name)+'</span><span class="legend-right">'+currency(c.amount)+'</span></div>').join('');
 
-      $('accounts-list').innerHTML=acc.map((a,i)=>`<div class="account"><div class="avatar a${i+1}">${peopleAbbr[i]||'•'}</div><div><div class="acc-name">${esc(a.name)}</div><div class="acc-detail">分攤 ${full(a.due)} · 代付 ${full(a.advanced)} · 已付結算 ${full(a.paid)}</div></div><div class="acc-right"><div class="acc-number">${full(Math.abs(a.balance))}</div><span class="pill ${esc(a.status)}">${labelStatus(a.status)}</span></div></div>`).join('');
-      $('account-table').innerHTML=acc.map(a=>`<tr><td class="name">${esc(a.name)}<div class="smallsub">${a.people===2?'兩人合併':'個人'}</div></td><td class="num">${full(a.due)}</td><td class="num">${full(a.advanced)}</td><td class="num">${full(a.paid)}</td><td class="num">${a.balance<0?'應收 ':'待付 '}${full(Math.abs(a.balance))}</td><td><span class="pill ${esc(a.status)}">${labelStatus(a.status)}</span></td></tr>`).join('');
-      const cats=(data.categories||[]).filter(c=>c.amount>0), catTotal=cats.reduce((sum,c)=>sum+c.amount,0);
-      let pos=0; const stops=[];
-      cats.forEach((c,i)=>{const next=pos+(catTotal?c.amount/catTotal*100:0);stops.push(`${colors[i%colors.length]} ${pos.toFixed(2)}% ${next.toFixed(2)}%`);pos=next;});
-      $('donut').style.background=stops.length?`conic-gradient(${stops.join(',')})`:'#eef3ef';
-      $('donut').setAttribute('aria-label',cats.map(c=>`${c.name} ${full(c.amount)}`).join('，'));
-      $('legend').innerHTML=cats.map((c,i)=>`<div class="legend-row"><span class="legend-left"><span class="circle" style="background:${colors[i%colors.length]}"></span>${esc(c.name)}</span><span class="legend-right">${full(c.amount)}</span></div>`).join('');
-      const couple=acc.find(a=>a.name==='LamEC + Carrie');
-      const outstandingReceipts=data.unallocatedReceipts||0;
-      if(outstandingReceipts>0){$('settlement-note').title='已有結算付款 '+full(outstandingReceipts)+'，但實際收款人尚待核對';}else{$('settlement-note').removeAttribute('title');}
-      $('settlement-note').innerHTML=couple&&couple.status==='settled'
-        ? `✅ <b>LamEC + Carrie 已付清</b>，截至目前應分攤 ${full(couple.due)}，已登記付款 ${full(couple.paid)}。新增開支後狀態會重新計算。`
-        : couple?`ℹ︎ <b>LamEC + Carrie 最新結算</b>：應分攤 ${full(couple.due)}，已付 ${full(couple.paid)}，差額 ${full(couple.balance)}。`:'尚未有此帳戶記錄。';
-      const t=data.transferOverview||{outstanding:0,unpaid:[],scenarios:[],requiresRecipientConfirmation:false};
-      const renderRoutes=routes=>routes.length?'<div class="transfer-list">'+routes.map(r=>`<div class="transfer-route"><span class="transfer-person">${esc(r.from)}</span><span class="transfer-arrow">→</span><span class="transfer-person">${esc(r.to)}</span><span class="transfer-money">${full(r.amount)}</span></div>`).join('')+'</div>':'<div class="hint">共同開支已結清，暫無轉帳需要。</div>';
-      const transferIntro=t.unpaid.length?'<div class="transfer-section">目前仍需支付的共同開支</div>'+t.unpaid.map(a=>`<div class="transfer-account"><span>${esc(a.name)}</span><strong>${full(a.amount)}</strong></div>`).join(''):'<div class="hint">目前沒有待付的共同開支。</div>';
-      const scenarioAlert=t.requiresRecipientConfirmation?`<div class="transfer-alert"><b>尚未確認歷史付款的收款人：</b>LamEC + Carrie 已登記結算 ${full(data.unallocatedReceipts)}，但尚不知道給了 William 或 Edward。以下兩套轉帳清單只是條件試算，不能同時執行；若款項有拆分，需提供各收款人實收金額才可得出最終清單。</div>`:'';
-      const scenarioHtml='<div class="transfer-section">'+(t.requiresRecipientConfirmation?'兩種不同情況的轉帳清單':'確認後的轉帳清單')+'</div><div class="transfer-scenarios">'+t.scenarios.map((sc,i)=>`<div class="transfer-scenario"><h3>${sc.conditional?'情況 '+(i+1)+'：之前款項全數給 '+esc(sc.recipient):'建議轉帳'}</h3><p>${sc.conditional?'只在 NT
-      const shopping=data.shopping||{total:0,receipts:[],owners:[],claims:[]};
-      const personalTransfers=shopping.claims.length?shopping.claims.map(c=>`<div class="transfer-route"><span class="transfer-person">${esc(c.from)}</span><span class="transfer-arrow">→</span><span class="transfer-person">${esc(c.to)}</span><span class="transfer-money">${full(c.amount)}</span></div>`).join(''):'<div class="hint">沒有個人代購待付款。</div>';
-      const transferPersonal='<div class="transfer-section">個人購物代付 · 獨立結算</div><div class="transfer-list">'+personalTransfers+'</div><div class="hint">Rapha 購物款項與旅行共同開支不互相抵銷。以上金額尚未有個人購物還款紀錄。</div>';
-      $('transfer-content').innerHTML=scenarioAlert+transferIntro+scenarioHtml+transferPersonal;
-      $('transfer-overview').innerHTML=(t.requiresRecipientConfirmation?'<div class="transfer-alert">⚠ 之前一筆結算付款的收款人未確認；請到「誰付誰」分頁查看兩種條件試算。</div>':'')+transferIntro+transferPersonal+'<div class="hint">詳細轉帳對象請點選上方「誰付誰」分頁。僅在收款人確認後，條件試算才可視作正式指示。</div>';
+    const couple=acc.find(a=>a.name==='LamEC + Carrie');
+    const historical=data.settlements.map(p=>({from:p.account,to:p.receivedBy||'收款人未確認',amount:p.amountCents}));
+    const historicalHtml='<div class="transfer-section">已經付款（不需重付）</div>'+routeHtml(historical);
+    const pendingHtml='<div class="transfer-section">尚待轉帳 · 共同開支</div>'+routeHtml(model.routes);
+    const warning=model.unknownRecipient?'<div class="transfer-alert">有收款人未確認的結算紀錄 '+currency(model.unknownRecipient)+'，請核實才進行轉帳。</div>':'';
+    const explanation='<div class="hint">'+escapeHTML(model.collector)+' 統一收取共同開支，然後轉付 '+escapeHTML(model.forwardTo)+'。待轉帳金額只是結算建議，尚未記錄為實際付款。已付給 '+escapeHTML(model.collector)+' 的款項已計入。</div>';
+    const shoppingRoutes=model.shoppingClaims.map(c=>({from:c.from,to:c.to,amount:c.amount}));
+    const shoppingTransfer='<div class="transfer-section">個人購物 · 獨立結算</div>'+routeHtml(shoppingRoutes)+'<div class="hint">Rapha 購物不與共同開支自動抵銷，未有付款確認前屬待付款。</div>';
+    const allTransfers=warning+historicalHtml+pendingHtml+explanation+shoppingTransfer;
+    $('transfer-content').innerHTML=allTransfers;
+    $('transfer-overview').innerHTML=warning+pendingHtml+explanation+shoppingTransfer;
+    $('settlement-note').innerHTML=couple?
+      '<b>LamEC + Carrie 已付 '+currency(couple.paid)+' 給 '+escapeHTML(model.collector)+'</b>。目前累計應分攤 '+currency(couple.due)+'，尚差 '+currency(Math.max(0,couple.net))+'。':
+      '目前沒有合併帳戶的結算資料。';
+    $('shopping-overview').innerHTML=shoppingHtml(model);
+    $('shopping-summary').innerHTML=shoppingHtml(model);
+    $('shopping-list').innerHTML=model.shoppingReceipts.map(r=>
+      '<div class="shopping-receipt"><div class="shopping-title">'+escapeHTML(r.merchant)+' · '+fmtDate(r.date)+' · 發票 '+escapeHTML(r.receiptNumber)+'</div>'+
+      '<div class="subtitle">付款人 '+escapeHTML(r.paidBy)+' · '+r.items.length+' 件 · '+currency(r.totalCents)+'</div>'+
+      '<div class="table-wrap"><table class="tbl"><thead><tr><th>商品</th><th>歸屬</th><th style="text-align:right">金額</th></tr></thead><tbody>'+
+      r.items.map(item=>'<tr><td>'+escapeHTML(item.description)+'</td><td class="shopping-owner">'+escapeHTML(item.owner)+'</td><td class="num">'+currency(item.amountCents)+'</td></tr>').join('')+
+      '</tbody></table></div></div>'
+    ).join('');
+    const expenses=data.expenses.slice().reverse();
+    $('latest-expenses').innerHTML=expenses.slice(0,4).map(expenseHtml).join('')||'<div class="empty">尚未有開支</div>';
+    $('all-expenses').innerHTML=expenses.map(expenseHtml).join('')||'<div class="empty">尚未有開支</div>';
+    $('expense-count').textContent=data.expenses.length+' 筆開支';
+    $('payment-list').innerHTML=data.settlements.map(p=>
+      '<div class="expense-card"><div class="expense-icon">💚</div><div><div class="expense-title">'+escapeHTML(p.account)+' → '+escapeHTML(p.receivedBy||'收款人待確認')+'</div>'+
+      '<div class="expense-desc">已登記結算 · '+fmtDate(p.recordedAt)+'</div></div><div class="expense-amount">'+currency(p.amountCents)+'</div></div>'
+    ).join('')||'<div class="empty">尚未有結算紀錄</div>';
+    $('syncStatus').textContent=(offline?'⚠ 離線預覽 · ':'✓ 網站資料已同步 · ')+
+      new Date().toLocaleString('zh-TW',{timeZone:'Asia/Taipei',hour12:false});
+    $('footer-live').textContent=(offline?'離線預覽資料':'資料來源：獨立 JSON 帳本')+' · 更新日期 '+escapeHTML(data.updatedAt||'未提供');
+    $('connection').innerHTML=offline?'<span class="dot" style="background:#edb96e"></span>離線預覽':'<span class="dot"></span>網站資料已同步';
+  }
+  async function refresh(){
+    const button=$('refreshBtn');button.disabled=true;button.textContent='⟳　載入中…';$('alert').classList.remove('show');
+    try{
+      const response=await fetch('./data.json?v='+Date.now(),{cache:'no-store'});
+      if(!response.ok)throw Error('HTTP '+response.status);
+      const data=await response.json();
+      show(calculate(data),false);
+    }catch(error){
+      show(calculate(embeddedPreview),true);
+      $('alert').textContent='無法讀取網站最新資料，目前顯示離線預覽。請稍後重新整理，核對已部署 data.json。';
+      $('alert').classList.add('show');
+    }finally{button.disabled=false;button.textContent='↻　重新整理';}
+  }
+  document.querySelectorAll('[data-panel]').forEach(button=>{
+    button.addEventListener('click',()=>{
+      document.querySelectorAll('[data-panel]').forEach(tab=>{tab.classList.toggle('active',tab===button);tab.setAttribute('aria-selected',tab===button?'true':'false');});
+      document.querySelectorAll('.panel').forEach(panel=>panel.classList.toggle('active',panel.id===button.dataset.panel));
+    });
+  });
+  $('refreshBtn').addEventListener('click',refresh);
+  show(calculate(embeddedPreview),true);
+  refresh();
 
-      const shoppingTotals=`<div class="shopping-grid"><div class="shopping-metric"><div class="tiny">購物發票合計</div><strong>${full(shopping.total)}</strong></div>${shopping.owners.map(a=>`<div class="shopping-metric"><div class="tiny">${esc(a.name)} 的商品</div><strong>${full(a.amount)}</strong></div>`).join('')}</div>`;
-      const claimHtml=shopping.claims.length?shopping.claims.map(c=>`<div class="shopping-claim"><b>${esc(c.from)} 應付 ${esc(c.to)} ${full(c.amount)}</b><div>這是個人代購的未確認結算，不與共同旅行開支互相抵銷。</div></div>`).join(''):'<div class="hint">目前沒有個人代購待結算。</div>';
-      $('shopping-overview').innerHTML=shopping.receipts.length?shoppingTotals+claimHtml:'<div class="empty">尚未有個人購物紀錄</div>';
-      $('shopping-summary').innerHTML=shopping.receipts.length?shoppingTotals+claimHtml:'';
-      $('shopping-list').innerHTML=shopping.receipts.map(r=>`<div class="shopping-receipt"><div class="shopping-title">${esc(r.merchant)} · ${esc(r.date)} · ${esc(r.time||'')} · 發票 ${esc(r.receiptNumber)}</div><div class="subtitle">付款人：<b>${esc(r.paidBy)}</b> · 共 ${r.items.length} 件 · ${full(r.total)}</div><div class="table-wrap"><table class="tbl"><thead><tr><th>商品</th><th>歸屬</th><th style="text-align:right">金額</th></tr></thead><tbody>${r.items.map(item=>`<tr><td>${esc(item.description)}</td><td class="shopping-owner">${esc(item.owner)}</td><td class="num">${full(item.amount)}</td></tr>`).join('')}</tbody></table></div></div>`).join('');
-      const items=data.expenses||[];
-      $('latest-expenses').innerHTML=items.length?items.slice(0,4).map(expenseHtml).join(''):'<div class="empty">尚未有開支</div>';
-      $('all-expenses').innerHTML=items.length?items.map(expenseHtml).join(''):'<div class="empty">尚未有開支</div>';
-      $('expense-count').textContent=`${items.length} 筆開支`;
-      $('payment-list').innerHTML=(data.payments||[]).length?(data.payments||[]).map(p=>`<div class="expense-card"><div class="expense-icon">💚</div><div><div class="expense-title">${esc(p.account)}</div><div class="expense-desc">登記日期：${esc(p.date)} · 收款人：${esc(p.receivedBy)}</div><div class="tags"><span class="tag">結算付款</span></div></div><div class="expense-amount">${full(p.amount)}</div></div>`).join(''):'<div class="empty">尚未有付款紀錄</div>';
-      $('syncStatus').textContent=(preview?'⚠ 離線預覽，並非網站最新資料 · ':'✓ 已取得網站資料 · ') + (data.fetchedAt||'');
-      $('footer-live').textContent=preview?'離線預覽資料 · 尚未讀取網站最新記錄':`資料更新日期 ${esc(data.updatedAt||'未提供')} · 資料來源：獨立 JSON 帳本`;
-      $('connection').innerHTML=preview?'<span class="dot" style="background:#edb96e"></span>離線預覽':'<span class="dot"></span>網站資料已同步';
-    }
-    function showAlert(message) {$('alert').textContent=message;$('alert').classList.add('show');}
-    function hideAlert() {$('alert').classList.remove('show');}
-    async function refresh() {
-      const btn=$('refreshBtn');btn.disabled=true;btn.textContent='⟳　載入中…';hideAlert();
-      try {
-        const res=await fetch('./data.json?v='+Date.now(),{cache:'no-store'});
-        if(!res.ok) throw Error('HTTP '+res.status);
-        const raw=await res.json();
-        draw(compute(raw));
-      } catch (error) {
-        draw(compute(embeddedPreview),true);
-        showAlert('目前無法讀取網站最新資料，顯示初始離線預覽（可能不是最新金額）。請確認已部署 index.html 與 data.json，並稍後重試。');
-      } finally {btn.disabled=false;btn.textContent='↻　重新整理';}
-    }
-    document.querySelectorAll('[data-panel]').forEach(b=>b.addEventListener('click',()=>{
-      document.querySelectorAll('[data-panel]').forEach(t=>{t.classList.toggle('active',t===b);t.setAttribute('aria-selected',t===b?'true':'false');});
-      document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===b.dataset.panel));
-    }));
-    $('refreshBtn').addEventListener('click',refresh);
-    draw(compute(embeddedPreview),true);refresh();
-  </script>
-</body>
-</html>+fmt(data.unallocatedReceipts)+' 已全部由 '+esc(sc.recipient)+' 收到時才適用。':'根據目前已登記代付與付款資料。'}</p>${renderRoutes(sc.routes)}</div>`).join('')+'</div>'+(t.requiresRecipientConfirmation?'<div class="hint">如先前已付款項由其中一位代付人收取，他可能需要再轉一部分給另一位。這是既有款項的重新分配，不是新增開支；因此某情況的總轉帳額可能高於其他旅伴尚待付款的金額。</div>':'');
-      const shopping=data.shopping||{total:0,receipts:[],owners:[],claims:[]};
-      const personalTransfers=shopping.claims.length?shopping.claims.map(c=>`<div class="transfer-route"><span class="transfer-person">${esc(c.from)}</span><span class="transfer-arrow">→</span><span class="transfer-person">${esc(c.to)}</span><span class="transfer-money">${full(c.amount)}</span></div>`).join(''):'<div class="hint">沒有個人代購待付款。</div>';
-      const transferPersonal='<div class="transfer-section">個人購物代付 · 獨立結算</div><div class="transfer-list">'+personalTransfers+'</div><div class="hint">Rapha 購物款項與旅行共同開支不互相抵銷。以上金額尚未有個人購物還款紀錄。</div>';
-      $('transfer-content').innerHTML=scenarioAlert+transferIntro+scenarioHtml+transferPersonal;
-      $('transfer-overview').innerHTML=(t.requiresRecipientConfirmation?'<div class="transfer-alert">⚠ 之前一筆結算付款的收款人未確認；請到「誰付誰」分頁查看兩種條件試算。</div>':'')+transferIntro+transferPersonal+'<div class="hint">詳細轉帳對象請點選上方「誰付誰」分頁。僅在收款人確認後，條件試算才可視作正式指示。</div>';
-
-      const shoppingTotals=`<div class="shopping-grid"><div class="shopping-metric"><div class="tiny">購物發票合計</div><strong>${full(shopping.total)}</strong></div>${shopping.owners.map(a=>`<div class="shopping-metric"><div class="tiny">${esc(a.name)} 的商品</div><strong>${full(a.amount)}</strong></div>`).join('')}</div>`;
-      const claimHtml=shopping.claims.length?shopping.claims.map(c=>`<div class="shopping-claim"><b>${esc(c.from)} 應付 ${esc(c.to)} ${full(c.amount)}</b><div>這是個人代購的未確認結算，不與共同旅行開支互相抵銷。</div></div>`).join(''):'<div class="hint">目前沒有個人代購待結算。</div>';
-      $('shopping-overview').innerHTML=shopping.receipts.length?shoppingTotals+claimHtml:'<div class="empty">尚未有個人購物紀錄</div>';
-      $('shopping-summary').innerHTML=shopping.receipts.length?shoppingTotals+claimHtml:'';
-      $('shopping-list').innerHTML=shopping.receipts.map(r=>`<div class="shopping-receipt"><div class="shopping-title">${esc(r.merchant)} · ${esc(r.date)} · ${esc(r.time||'')} · 發票 ${esc(r.receiptNumber)}</div><div class="subtitle">付款人：<b>${esc(r.paidBy)}</b> · 共 ${r.items.length} 件 · ${full(r.total)}</div><div class="table-wrap"><table class="tbl"><thead><tr><th>商品</th><th>歸屬</th><th style="text-align:right">金額</th></tr></thead><tbody>${r.items.map(item=>`<tr><td>${esc(item.description)}</td><td class="shopping-owner">${esc(item.owner)}</td><td class="num">${full(item.amount)}</td></tr>`).join('')}</tbody></table></div></div>`).join('');
-      const items=data.expenses||[];
-      $('latest-expenses').innerHTML=items.length?items.slice(0,4).map(expenseHtml).join(''):'<div class="empty">尚未有開支</div>';
-      $('all-expenses').innerHTML=items.length?items.map(expenseHtml).join(''):'<div class="empty">尚未有開支</div>';
-      $('expense-count').textContent=`${items.length} 筆開支`;
-      $('payment-list').innerHTML=(data.payments||[]).length?(data.payments||[]).map(p=>`<div class="expense-card"><div class="expense-icon">💚</div><div><div class="expense-title">${esc(p.account)}</div><div class="expense-desc">登記日期：${esc(p.date)} · 收款人：${esc(p.receivedBy)}</div><div class="tags"><span class="tag">結算付款</span></div></div><div class="expense-amount">${full(p.amount)}</div></div>`).join(''):'<div class="empty">尚未有付款紀錄</div>';
-      $('syncStatus').textContent=(preview?'⚠ 離線預覽，並非網站最新資料 · ':'✓ 已取得網站資料 · ') + (data.fetchedAt||'');
-      $('footer-live').textContent=preview?'離線預覽資料 · 尚未讀取網站最新記錄':`資料更新日期 ${esc(data.updatedAt||'未提供')} · 資料來源：獨立 JSON 帳本`;
-      $('connection').innerHTML=preview?'<span class="dot" style="background:#edb96e"></span>離線預覽':'<span class="dot"></span>網站資料已同步';
-    }
-    function showAlert(message) {$('alert').textContent=message;$('alert').classList.add('show');}
-    function hideAlert() {$('alert').classList.remove('show');}
-    async function refresh() {
-      const btn=$('refreshBtn');btn.disabled=true;btn.textContent='⟳　載入中…';hideAlert();
-      try {
-        const res=await fetch('./data.json?v='+Date.now(),{cache:'no-store'});
-        if(!res.ok) throw Error('HTTP '+res.status);
-        const raw=await res.json();
-        draw(compute(raw));
-      } catch (error) {
-        draw(compute(embeddedPreview),true);
-        showAlert('目前無法讀取網站最新資料，顯示初始離線預覽（可能不是最新金額）。請確認已部署 index.html 與 data.json，並稍後重試。');
-      } finally {btn.disabled=false;btn.textContent='↻　重新整理';}
-    }
-    document.querySelectorAll('[data-panel]').forEach(b=>b.addEventListener('click',()=>{
-      document.querySelectorAll('[data-panel]').forEach(t=>{t.classList.toggle('active',t===b);t.setAttribute('aria-selected',t===b?'true':'false');});
-      document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===b.dataset.panel));
-    }));
-    $('refreshBtn').addEventListener('click',refresh);
-    draw(compute(embeddedPreview),true);refresh();
-  </script>
+</script>
 </body>
 </html>
