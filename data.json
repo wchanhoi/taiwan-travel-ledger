@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "updatedAt": "2026-11-19T09:37:00+08:00",
+  "currency": "TWD",
+  "travelers": [
+    "William",
+    "Edward",
+    "Bob",
+    "LamEC",
+    "Carrie"
+  ],
+  "householdAccounts": [
+    {
+      "name": "LamEC + Carrie",
+      "members": [
+        "LamEC",
+        "Carrie"
+      ]
+    }
+  ],
+  "expenses": [
+    {
+      "id": "e1",
+      "date": "2026-11-18",
+      "category": "機場接送",
+      "description": "機場接送",
+      "amountCents": 280000,
+      "participants": [
+        "William",
+        "Edward",
+        "Bob"
+      ],
+      "paidBy": null
+    },
+    {
+      "id": "e2",
+      "date": "2026-11-18",
+      "category": "餐飲",
+      "description": "18號晚餐",
+      "amountCents": 744700,
+      "participants": [
+        "William",
+        "Edward",
+        "Bob",
+        "LamEC",
+        "Carrie"
+      ],
+      "paidBy": null
+    },
+    {
+      "id": "e3",
+      "date": "2026-11-18",
+      "category": "車費",
+      "description": "車費 ①",
+      "amountCents": 22900,
+      "participants": [
+        "William",
+        "Bob",
+        "LamEC",
+        "Carrie"
+      ],
+      "paidBy": null
+    },
+    {
+      "id": "e4",
+      "date": "2026-11-18",
+      "category": "車費",
+      "description": "車費 ②",
+      "amountCents": 26300,
+      "participants": [
+        "William",
+        "LamEC",
+        "Carrie"
+      ],
+      "paidBy": null
+    }
+  ],
+  "settlements": [
+    {
+      "id": "p1",
+      "recordedAt": "2026-11-19",
+      "account": "LamEC + Carrie",
+      "amountCents": 326863,
+      "receivedBy": null,
+      "note": "按使用者確認：已付清截至目前的分攤。實際付款日期、方式及收款人尚待核對。"
+    }
+  ]
+}
