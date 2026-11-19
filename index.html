@@ -86,7 +86,7 @@
     <div class="stat-grid" aria-label="帳目摘要">
       <div class="stat"><div><div class="label"><span class="circle"></span>旅程累計支出</div><div class="sub">2026年11月 · 新台幣</div></div><div class="number"><small>NT$</small><span id="total">10,739</span></div></div>
       <div class="stat"><div class="label"><span class="circle blue"></span>已登記結算</div><div class="number"><small>NT$</small><span id="paid">3,268.63</span></div><div class="sub">旅伴已付款項</div></div>
-      <div class="stat"><div class="label"><span class="circle orange"></span>尚待核對／結算</div><div class="number"><small>NT$</small><span id="remaining">7,470.37</span></div><div class="sub">未登記付款的分攤額</div></div>
+      <div class="stat"><div class="label"><span class="circle orange"></span>其他旅伴待結算</div><div class="number"><small>NT$</small><span id="remaining">7,470.37</span></div><div class="sub">已扣除 William 自己的消費份額</div></div>
     </div>
     <div id="alert" class="alert" role="status"></div>
     <nav class="tabs" role="tablist" aria-label="帳目分類">
@@ -97,13 +97,13 @@
     </nav>
     <section class="panel active" id="overview" role="tabpanel">
       <div class="grid2">
-        <div class="card"><div class="card-head"><h2>旅伴結算狀態</h2><span class="subtitle">4 個結算帳戶 · 5 位旅伴</span></div><div id="accounts-list"></div><div class="hint">ℹ︎ LamEC + Carrie 合併結算，但每筆消費仍按兩個人計算。其他人的付款情況尚未完整核對。</div></div>
+        <div class="card"><div class="card-head"><h2>旅伴結算狀態</h2><span class="subtitle">4 個結算帳戶 · 5 位旅伴</span></div><div id="accounts-list"></div><div class="hint">ℹ︎ LamEC + Carrie 合併結算，但每筆消費仍按兩個人計算。5 筆開支全部由 William 代付，其他人的付款按結算紀錄扣除。</div></div>
         <div class="card"><div class="card-head"><h2>開支分佈</h2><span class="subtitle">按類別</span></div><div class="donutbox"><div class="donut" id="donut" role="img" aria-label="各類開支比例"><div class="donut-center"><strong id="donut-total">10,739</strong><small>總消費 NT$</small></div></div></div><div class="legend" id="legend"></div></div>
       </div>
       <div class="section-row"><h2>最近開支</h2><span class="sync" id="syncStatus">載入最新資料中…</span></div>
       <div class="card" id="latest-expenses"></div>
     </section>
-    <section class="panel" id="accounts" role="tabpanel"><div class="card"><div class="card-head"><h2>各人應分攤及付款</h2><span class="subtitle">LamEC + Carrie 合併顯示</span></div><div class="table-wrap"><table class="tbl"><thead><tr><th>帳戶</th><th style="text-align:right">應分攤</th><th style="text-align:right">已付</th><th style="text-align:right">差額</th><th>狀態</th></tr></thead><tbody id="account-table"></tbody></table></div><div class="hint">「待核對」表示尚未記入結算付款，未必代表實際欠款。請先核實原始代付人及已收款資料。</div></div></section>
+    <section class="panel" id="accounts" role="tabpanel"><div class="card"><div class="card-head"><h2>各人應分攤及付款</h2><span class="subtitle">LamEC + Carrie 合併顯示</span></div><div class="table-wrap"><table class="tbl"><thead><tr><th>帳戶</th><th style="text-align:right">應分攤</th><th style="text-align:right">已付</th><th style="text-align:right">待結算</th><th>狀態</th></tr></thead><tbody id="account-table"></tbody></table></div><div class="hint">William 是所有消費的代付者，毋須還款給自己。其他帳戶顯示分攤額扣除已登記結算後的差額；已付結算的實際收款人仍待確認。</div></div></section>
     <section class="panel" id="expenses" role="tabpanel"><div class="card"><div class="card-head"><h2>所有支出明細</h2><span class="subtitle" id="expense-count">4 筆開支</span></div><div id="all-expenses"></div></div></section>
     <section class="panel" id="payments" role="tabpanel"><div class="card"><div class="card-head"><h2>已登記的結算付款</h2><span class="subtitle">與消費代付分開記錄</span></div><div class="settlement" id="settlement-note">✅ <b>LamEC + Carrie 已付清</b>（按目前登記的開支）。新的共同開支加入後，狀態會依最新分攤額重新計算。</div><div id="payment-list"></div><div class="hint">付款紀錄是團友之間的結算紀錄，並非各筆消費的原始付款人。實際收款人、付款日期可在確認後補充。</div></div></section>
     <div class="footer">🇹🇼 2026 台灣旅行共同記帳 · 獨立網站版本<br><span id="footer-live">資料來源：網站記帳資料（data.json）</span></div>
@@ -112,16 +112,106 @@
     // Independent hosted website. The only updateable source of truth is data.json.
     // No Google Sheets, API keys, login credentials, or browser storage required.
     const embeddedPreview = {
-      version:1, updatedAt:'2026-11-19T09:37:00+08:00', currency:'TWD',
-      travelers:['William','Edward','Bob','LamEC','Carrie'],
-      householdAccounts:[{name:'LamEC + Carrie',members:['LamEC','Carrie']}],
-      expenses:[
-        {id:'e1',date:'2026-11-18',category:'機場接送',description:'機場接送',amountCents:280000,participants:['William','Edward','Bob'],paidBy:null},
-        {id:'e2',date:'2026-11-18',category:'餐飲',description:'18號晚餐',amountCents:744700,participants:['William','Edward','Bob','LamEC','Carrie'],paidBy:null},
-        {id:'e3',date:'2026-11-18',category:'車費',description:'車費 ①',amountCents:22900,participants:['William','Bob','LamEC','Carrie'],paidBy:null},
-        {id:'e4',date:'2026-11-18',category:'車費',description:'車費 ②',amountCents:26300,participants:['William','LamEC','Carrie'],paidBy:null}
+      "version": 1,
+      "updatedAt": "2026-11-19",
+      "currency": "TWD",
+      "travelers": [
+        "William",
+        "Edward",
+        "Bob",
+        "LamEC",
+        "Carrie"
       ],
-      settlements:[{id:'p1',recordedAt:'2026-11-19',account:'LamEC + Carrie',amountCents:326863,receivedBy:null,note:'已確認付清截至目前分攤；付款日和收款人待核對'}]
+      "householdAccounts": [
+        {
+          "name": "LamEC + Carrie",
+          "members": [
+            "LamEC",
+            "Carrie"
+          ]
+        }
+      ],
+      "expenses": [
+        {
+          "id": "e1",
+          "date": "2026-11-18",
+          "category": "機場接送",
+          "description": "機場接送",
+          "amountCents": 280000,
+          "participants": [
+            "William",
+            "Edward",
+            "Bob"
+          ],
+          "paidBy": "William"
+        },
+        {
+          "id": "e2",
+          "date": "2026-11-18",
+          "category": "餐飲",
+          "description": "18號晚餐",
+          "amountCents": 744700,
+          "participants": [
+            "William",
+            "Edward",
+            "Bob",
+            "LamEC",
+            "Carrie"
+          ],
+          "paidBy": "William"
+        },
+        {
+          "id": "e3",
+          "date": "2026-11-18",
+          "category": "車費",
+          "description": "車費 ①",
+          "amountCents": 22900,
+          "participants": [
+            "William",
+            "Bob",
+            "LamEC",
+            "Carrie"
+          ],
+          "paidBy": "William"
+        },
+        {
+          "id": "e4",
+          "date": "2026-11-18",
+          "category": "車費",
+          "description": "車費 ②",
+          "amountCents": 26300,
+          "participants": [
+            "William",
+            "LamEC",
+            "Carrie"
+          ],
+          "paidBy": "William"
+        },
+        {
+          "id": "e5",
+          "date": "2026-11-19",
+          "category": "車費",
+          "description": "去 SOGO 車費",
+          "amountCents": 15400,
+          "participants": [
+            "William",
+            "Bob",
+            "LamEC",
+            "Carrie"
+          ],
+          "paidBy": "William"
+        }
+      ],
+      "settlements": [
+        {
+          "id": "p1",
+          "recordedAt": "2026-11-19",
+          "account": "LamEC + Carrie",
+          "amountCents": 326863,
+          "receivedBy": null,
+          "note": "按使用者確認：已付清截至目前的分攤。實際付款日期、方式及收款人尚待核對。"
+        }
+      ]
     };
     const $ = x => document.getElementById(x);
     const fmt = v => Number(v||0).toLocaleString('en-US',{minimumFractionDigits: (Math.round((v||0)*100)%100===0?0:2),maximumFractionDigits:2});
@@ -129,7 +219,7 @@
     const esc = s => String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const colors = ['#196f6b','#e8aa60','#83b5b3','#8a93c7','#b7a693','#bad8bf'];
     const peopleAbbr = ['W','E','B','L+C'];
-    const labelStatus = s => ({settled:'✓ 已付清',overpaid:'需核對超付','partially-paid':'部分結算',unconfirmed:'待核對'}[s]||'待核對');
+    const labelStatus = s => ({settled:'✓ 已付清',overpaid:'需核對超付','partially-paid':'部分結算',unconfirmed:'待結算',advance:'↗ 已代付'}[s]||'待核對');
     function emoji(cat) {return cat.includes('餐')?'🍜':cat.includes('車')?'🚕':cat.includes('機場')?'✈️':cat.includes('住')?'🏨':'🧾';}
     function checkData(data) {
       if(!data || !Array.isArray(data.expenses) || !Array.isArray(data.travelers) || !Array.isArray(data.settlements)) throw Error('資料格式不正確');
@@ -164,18 +254,23 @@
       }
       const paymentsByAccount={};
       for(const p of raw.settlements) paymentsByAccount[p.account]=(paymentsByAccount[p.account]||0)+p.amountCents;
+      const solePayer=raw.expenses.length>0 && raw.expenses.every(e=>e.paidBy && e.paidBy===raw.expenses[0].paidBy) ? raw.expenses[0].paidBy : null;
+      const payerAccount=accountDefs.find(a=>a.members.includes(solePayer))?.name || null;
+      const advancesByAccount=Object.fromEntries(accountDefs.map(a=>[a.name,raw.expenses.filter(e=>a.members.includes(e.paidBy)).reduce((sum,e)=>sum+e.amountCents,0)]));
       const accounts=accountDefs.map(a=>{
         const dueCents=a.members.reduce((s,m)=>s+(shares[m]||0),0);
         const paidCents=paymentsByAccount[a.name]||0;
         const balanceCents=dueCents-paidCents;
-        return {...a,due:dueCents/100,paid:paidCents/100,balance:balanceCents/100,
-          status:balanceCents===0?'settled':balanceCents<0?'overpaid':paidCents>0?'partially-paid':'unconfirmed'};
+        const advancedCents=advancesByAccount[a.name]||0;
+        return {...a,due:dueCents/100,paid:paidCents/100,balance:balanceCents/100,advanced:advancedCents/100,
+          status:a.name===payerAccount?'advance':balanceCents===0?'settled':balanceCents<0?'overpaid':paidCents>0?'partially-paid':'unconfirmed'};
       });
       const paidCents=raw.settlements.reduce((sum,p)=>sum+p.amountCents,0);
       const dueCents=accounts.reduce((sum,a)=>sum+Math.round(a.due*100),0);
       if(dueCents!==totalCents) throw Error('帳目分攤總額與消費總額不符');
+      const remainingCents = payerAccount ? accounts.filter(a=>a.name!==payerAccount).reduce((s,a)=>s+Math.max(0,Math.round(a.balance*100)),0) : totalCents-paidCents;
       return {
-        source:'live',updatedAt:raw.updatedAt,
+        source:'live',updatedAt:raw.updatedAt,remaining:remainingCents/100,payerAccount,
         fetchedAt:new Date().toLocaleString('zh-TW',{timeZone:'Asia/Taipei',hour12:false}),
         total:totalCents/100,paid:paidCents/100,accounts,
         expenses:[...raw.expenses].reverse().map(e=>({date:e.date,category:e.category,description:e.description,amount:e.amountCents/100,participants:e.participants,paidBy:e.paidBy??'未提供'})),
@@ -183,13 +278,13 @@
         categories:Array.from(cats,(entry)=>({name:entry[0],amount:entry[1]/100})).sort((a,b)=>b.amount-a.amount)
       };
     }
-    function expenseHtml(item) {return `<div class="expense-card"><div class="expense-icon">${emoji(item.category)}</div><div><div class="expense-title">${esc(item.description)}</div><div class="expense-desc">${esc(item.date)} · ${esc(item.category)} · ${item.participants.length} 人分攤</div><div class="tags">${item.participants.map(p=>`<span class="tag">${esc(p)}</span>`).join('')}</div></div><div class="expense-amount">${full(item.amount)}</div></div>`;}
+    function expenseHtml(item) {return `<div class="expense-card"><div class="expense-icon">${emoji(item.category)}</div><div><div class="expense-title">${esc(item.description)}</div><div class="expense-desc">${esc(item.date)} · ${esc(item.category)} · ${item.participants.length} 人分攤 · 付款：${esc(item.paidBy)}</div><div class="tags">${item.participants.map(p=>`<span class="tag">${esc(p)}</span>`).join('')}</div></div><div class="expense-amount">${full(item.amount)}</div></div>`;}
     function draw(data,preview=false) {
       const total=Number(data.total)||0,paid=Number(data.paid)||0;
-      $('total').textContent=fmt(total);$('paid').textContent=fmt(paid);$('remaining').textContent=fmt(total-paid);$('donut-total').textContent=fmt(total);
+      $('total').textContent=fmt(total);$('paid').textContent=fmt(paid);$('remaining').textContent=fmt(data.remaining ?? (total-paid));$('donut-total').textContent=fmt(total);
       const acc=data.accounts||[];
-      $('accounts-list').innerHTML=acc.map((a,i)=>`<div class="account"><div class="avatar a${i+1}">${peopleAbbr[i]||'•'}</div><div><div class="acc-name">${esc(a.name)}</div><div class="acc-detail">${a.people===2?'兩人合併帳戶':'個人帳戶'} · 已登記付款 ${full(a.paid)}</div></div><div class="acc-right"><div class="acc-number">${full(a.due)}</div><span class="pill ${esc(a.status)}">${labelStatus(a.status)}</span></div></div>`).join('');
-      $('account-table').innerHTML=acc.map(a=>`<tr><td class="name">${esc(a.name)}<div class="smallsub">${a.people===2?'兩人合併':'個人'}</div></td><td class="num">${full(a.due)}</td><td class="num">${full(a.paid)}</td><td class="num">${full(a.balance)}</td><td><span class="pill ${esc(a.status)}">${labelStatus(a.status)}</span></td></tr>`).join('');
+      $('accounts-list').innerHTML=acc.map((a,i)=>`<div class="account"><div class="avatar a${i+1}">${peopleAbbr[i]||'•'}</div><div><div class="acc-name">${esc(a.name)}</div><div class="acc-detail">${a.people===2?'兩人合併帳戶':'個人帳戶'} · ${a.advanced>0?'已代付 '+full(a.advanced):'已登記結算 '+full(a.paid)}</div></div><div class="acc-right"><div class="acc-number">${full(a.due)}</div><span class="pill ${esc(a.status)}">${labelStatus(a.status)}</span></div></div>`).join('');
+      $('account-table').innerHTML=acc.map(a=>`<tr><td class="name">${esc(a.name)}<div class="smallsub">${a.advanced>0?'代付 '+full(a.advanced):a.people===2?'兩人合併':'個人'}</div></td><td class="num">${full(a.due)}</td><td class="num">${full(a.paid)}</td><td class="num">${a.status==='advance'?'—':full(a.balance)}</td><td><span class="pill ${esc(a.status)}">${labelStatus(a.status)}</span></td></tr>`).join('');
       const cats=(data.categories||[]).filter(c=>c.amount>0), catTotal=cats.reduce((sum,c)=>sum+c.amount,0);
       let pos=0; const stops=[];
       cats.forEach((c,i)=>{const next=pos+(catTotal?c.amount/catTotal*100:0);stops.push(`${colors[i%colors.length]} ${pos.toFixed(2)}% ${next.toFixed(2)}%`);pos=next;});
