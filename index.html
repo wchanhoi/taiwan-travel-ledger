@@ -107,7 +107,7 @@
         </div>
       </div>
       <div class="fx-meta"><span class="fx-rate-list" id="fx-rates">1 TWD ≈ S$0.03914 ／ HK$0.2378</span><span id="fx-status"> · 2026-11-20 參考快照（非即時）</span>
-        <div id="fx-sources">快照參考來源：<a href="https://currencycalc.app/en-gb/twd-to-sgd" target="_blank" rel="noopener noreferrer">SGD</a>、<a href="https://www.xe.com/en-ca/currencyconverter/convert/?Amount=1&amp;From=TWD&amp;To=HKD" target="_blank" rel="noopener noreferrer">HKD</a>。即時取用每日更新的 <a href="https://www.exchangerate-api.com" target="_blank" rel="noopener noreferrer">Rates By Exchange Rate API</a>。</div>
+        <div id="fx-sources">快照參考來源：<a href="https://currencycalc.app/en-gb/twd-to-sgd" target="_blank" rel="noopener noreferrer">SGD</a>、<a href="https://www.xe.com/en-ca/currencyconverter/convert/?Amount=1&amp;From=TWD&amp;To=HKD" target="_blank" rel="noopener noreferrer">HKD</a>。網頁載入時查詢每日更新的 <a href="https://www.exchangerate-api.com" target="_blank" rel="noopener noreferrer">Rates By Exchange Rate API</a>。</div>
         <div id="fx-notice">顯示金額預設向上取整；分攤帳本保留原始精確金額。SGD/HKD 為市場參考價，不含銀行匯差及手續費。</div>
       </div>
     </section>
@@ -385,14 +385,15 @@
       const json=await response.json();
       const SGD=Number(json.rates?.SGD),HKD=Number(json.rates?.HKD),unix=Number(json.time_last_update_unix);
       const age=now-unix*1000;
-      if(json.result!=='success'||json.base_code!=='TWD'||!(SGD>0.01&&SGD<0.2)||!(HKD>0.1&&HKD<1)||!Number.isFinite(unix)||age< -6*60*60*1000||age>FX_MAX_AGE)
+      if(json.result!=='success'||json.base_code!=='TWD'||!(SGD>0.01&&SGD<0.2)||!(HKD>0.1&&HKD<1)||!Number.isFinite(unix)||age< -6*60*60*1000||age>FX_MAX_AGE||(freshSnapshot()&&unix*1000<Date.parse(FX_SNAPSHOT.asOf)))
         throw Error('FX timestamp invalid or quote unavailable');
       fxState.rates={SGD,HKD};
       fxState.asOf=new Date(unix*1000).toISOString();
       fxState.source='api';fxState.available=true;
     }catch(error){
       // Do not silently display outdated market rates as live quotes.
-      if(fxState.source!=='api')fxState.available=freshSnapshot();
+      const age=now-Date.parse(fxState.asOf);
+      fxState.available=fxState.source==='api'?(age>=-6*60*60*1000&&age<=FX_MAX_AGE):freshSnapshot();
     }
     renderFx();
     if(lastModel)show(lastModel,lastOffline);
