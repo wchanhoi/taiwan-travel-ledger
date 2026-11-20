@@ -66,6 +66,7 @@
     .settlement {border-left:4px solid #29a178;background:#f2faf5;border-radius:14px;padding:18px 20px;margin:16px 0 24px;font-size:13px;line-height:1.8;color:#466a5d;}
     .shopping-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0 0 18px}.shopping-metric{background:#f1f7f4;border-radius:14px;padding:14px}.shopping-metric .tiny{font-size:11px;color:#6d817c}.shopping-metric strong{display:block;font-size:19px;margin-top:7px;font-variant-numeric:tabular-nums}.shopping-title{font-size:15px;font-weight:850;margin:14px 0}.shopping-claim{background:#f8f4ea;border-radius:12px;padding:15px;font-size:13px;line-height:1.8;margin:12px 0}.shopping-owner{font-weight:750;color:#355b59}.shopping-receipt{border-top:1px solid #e4eeea;margin-top:18px;padding-top:12px}.shopping-receipt:first-child{border-top:0;margin-top:0;padding-top:0}@media(max-width:570px){.shopping-grid{grid-template-columns:1fr 1fr}.shopping-metric:first-child{grid-column:1/-1}} 
     .transfer-list{display:flex;flex-direction:column;gap:10px}.transfer-route{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto;align-items:center;gap:8px;border:1px solid #e6efec;background:#fbfdfb;border-radius:14px;padding:15px}.transfer-person{font-weight:850;font-size:13px;min-width:0;overflow-wrap:anywhere}.transfer-arrow{color:#328479;font-weight:900}.transfer-money{font-size:15px;font-weight:900;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}.transfer-scenarios{display:grid;grid-template-columns:1fr 1fr;gap:15px}.transfer-scenario{padding:18px;border:1px solid #e7eee9;border-radius:18px;background:#fff}.transfer-scenario h3{margin:0 0 8px;font-size:15px}.transfer-scenario p{margin:0 0 14px;color:#657d77;font-size:12px;line-height:1.65}.transfer-alert{padding:13px 16px;border-radius:12px;background:#fff7e8;color:#835f26;font-size:12px;line-height:1.7;margin-bottom:17px}.transfer-section{margin:20px 0 13px;font-size:15px;font-weight:850}.transfer-account{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #edf2ee;font-size:13px}.transfer-account strong{font-variant-numeric:tabular-nums}@media(max-width:800px){.transfer-scenarios{grid-template-columns:1fr}}@media(max-width:570px){.transfer-route{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:6px}.transfer-money{grid-column:1/-1;text-align:left;padding-top:4px;font-size:18px}} 
+    @media(max-width:570px){.stat-grid .stat:not(:first-child) .number{font-size:clamp(18px,4.9vw,22px);letter-spacing:-.055em;white-space:normal;overflow-wrap:anywhere}.stat-grid .stat:not(:first-child) .number small{display:block;font-size:11px;margin:0 0 3px}.stat-grid .stat:first-child .number{font-size:clamp(24px,7vw,30px)}.account .acc-right{max-width:140px}.transfer-route .transfer-money{overflow-wrap:anywhere}}
     .empty{padding:40px;text-align:center;color:var(--muted);font-size:14px;}
     .footer{color:#8da29c;text-align:center;font-size:11px;line-height:1.8;padding:37px 15px 40px;}
     .sync{display:flex;align-items:center;gap:7px;font-size:11px;color:#7d9690}
@@ -130,7 +131,7 @@
   const fmtDate = value => escapeHTML(value||'未記錄');
   const catEmoji = cat => /餐/.test(cat)?'🍜':/車/.test(cat)?'🚕':/機場/.test(cat)?'✈️':/住/.test(cat)?'🏨':'🧾';
   const colors = ['#196f6b','#e8aa60','#83b5b3','#8a93c7','#b7a693','#bad8bf'];
-  const avatars=['W','E','B','L+C','T','Ed','R','LC','LL','M','H'];
+  const avatarInitials = name => ({William:'W',Edward:'E',Bob:'B',Tomas:'T',Eddie:'Ed',Ronald:'R','Leo Chau':'LC','Leo Lee':'LL',Marco:'M',Ho:'H','LamEC + Carrie':'L+C'})[name] || String(name).split(/[\\s+]+/).filter(Boolean).map(w=>w[0].toUpperCase()).join('').slice(0,3);
 
   function calculate(data){
     if(!data || !Array.isArray(data.travelers) || !Array.isArray(data.expenses) || !Array.isArray(data.settlements)) throw Error('資料格式不正確');
@@ -256,9 +257,9 @@
     $('donut-total').textContent=number(model.expenseTotal);
     const acc=model.accounts;
     $('accounts-list').innerHTML=acc.map((a,i)=>{
-      let status=a.name===model.collector?'統一收款／轉付':a.net<0?'應收款':a.net>0?'待付款':'已結清';
+      let status=a.net<0?'淨應收':a.net>0?'待付款':'已結清';
       let cls=a.net===0?'settled':a.net<0?'advance':'unconfirmed';
-      return '<div class="account"><div class="avatar a'+(i+1)+'">'+(avatars[i]||'•')+'</div>'+
+      return '<div class="account"><div class="avatar a'+((i%4)+1)+'">'+escapeHTML(avatarInitials(a.name))+'</div>'+
         '<div><div class="acc-name">'+escapeHTML(a.name)+'</div><div class="acc-detail">分攤 '+currency(a.due)+' · 代付 '+currency(a.advanced)+' · 已付結算 '+currency(a.paid)+'</div></div>'+
         '<div class="acc-right"><div class="acc-number">'+currency(Math.abs(a.net))+'</div><span class="pill '+cls+'">'+status+'</span></div></div>';
     }).join('');
@@ -266,9 +267,9 @@
       '<tr><td class="name">'+escapeHTML(a.name)+'<div class="smallsub">'+(a.members.length===2?'兩人合併':'個人')+'</div></td>'+
       '<td class="num">'+currency(a.due)+'</td><td class="num">'+currency(a.advanced)+'</td>'+
       '<td class="num">'+currency(a.paid)+'</td><td class="num">'+
-      (a.name===model.collector?'代收／待轉 ':a.net<0?'應收 ':a.net>0?'待付 ':'已結清 ')+currency(Math.abs(a.net))+'</td>'+
+      (a.net<0?'應收 ':a.net>0?'待付 ':'已結清 ')+currency(Math.abs(a.net))+'</td>'+
       '<td><span class="pill '+(a.net<0?'advance':a.net===0?'settled':'unconfirmed')+'">'+
-      (a.name===model.collector?'統一結算':a.net<0?'應收':a.net>0?'待付':'已結清')+'</span></td></tr>'
+      (a.net<0?'應收':a.net>0?'待付':'已結清')+'</span></td></tr>'
     ).join('');
     const cats=model.categories.filter(c=>c.amount>0);
     const totalCats=cats.reduce((n,c)=>n+c.amount,0);
@@ -281,7 +282,7 @@
     const couple=acc.find(a=>a.name==='LamEC + Carrie');
     const historical=data.settlements.map(p=>({from:p.account,to:p.receivedBy||'收款人未確認',amount:p.amountCents}));
     const historicalHtml='<div class="transfer-section">已經付款（不需重付）</div>'+routeHtml(historical);
-    const pendingHtml='<div class="transfer-section">尚待轉帳 · 共同開支</div>'+routeHtml(model.routes);
+    const pendingHtml='<div class="transfer-section">尚待轉帳 · 共同開支</div>'+(model.unknownRecipient?'<div class="transfer-alert">有結算收款人未確認，暫時無法安全生成轉帳路線。</div>':routeHtml(model.routes));
     const warning=model.unknownRecipient?'<div class="transfer-alert">有收款人未確認的結算紀錄 '+currency(model.unknownRecipient)+'，請核實才進行轉帳。</div>':'';
     const explanation='<div class="hint">'+escapeHTML(model.collector)+' 統一收取共同開支，然後轉付 '+escapeHTML(model.forwardTo)+'。待轉帳金額只是結算建議，尚未記錄為實際付款。已付給 '+escapeHTML(model.collector)+' 的款項已計入。</div>';
     const shoppingRoutes=model.shoppingClaims.map(c=>({from:c.from,to:c.to,amount:c.amount}));
@@ -290,7 +291,7 @@
     $('transfer-content').innerHTML=allTransfers;
     $('transfer-overview').innerHTML=warning+pendingHtml+explanation+shoppingTransfer;
     $('settlement-note').innerHTML=couple?
-      '<b>LamEC + Carrie 已付 '+currency(couple.paid)+' 給 '+escapeHTML(model.collector)+'</b>。目前累計應分攤 '+currency(couple.due)+'，尚差 '+currency(Math.max(0,couple.net))+'。':
+      '<b>LamEC + Carrie 已登記付款 '+currency(couple.paid)+'</b>。目前累計應分攤 '+currency(couple.due)+'，尚差 '+currency(Math.max(0,couple.net))+'；付款收款人見下方紀錄。':
       '目前沒有合併帳戶的結算資料。';
     $('shopping-overview').innerHTML=shoppingHtml(model);
     $('shopping-summary').innerHTML=shoppingHtml(model);
