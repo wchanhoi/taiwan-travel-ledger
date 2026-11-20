@@ -7,7 +7,14 @@
     "Edward",
     "Bob",
     "LamEC",
-    "Carrie"
+    "Carrie",
+    "Tomas",
+    "Eddie",
+    "Ronald",
+    "Leo Chau",
+    "Leo Lee",
+    "Macro",
+    "Ho"
   ],
   "householdAccounts": [
     {
@@ -171,6 +178,64 @@
         "Carrie"
       ],
       "paidBy": "William"
+    },
+    {
+      "id": "e12",
+      "date": "2026-11-20",
+      "category": "餐飲",
+      "description": "20號晚餐（收據）",
+      "amountCents": 1254000,
+      "participants": [
+        "William",
+        "Edward",
+        "Bob",
+        "Carrie",
+        "LamEC",
+        "Tomas",
+        "Eddie",
+        "Ronald",
+        "Leo Chau",
+        "Leo Lee",
+        "Macro",
+        "Ho"
+      ],
+      "paidBy": "William",
+      "receiptTime": "20:14:49",
+      "receiptBreakdown": {
+        "foodCents": 1140000,
+        "serviceChargeCents": 114000
+      },
+      "note": "收據銷售總計 NT$12,540，已包括 NT$1,140 服務費；12人平均分攤。"
+    },
+    {
+      "id": "e13",
+      "date": "2026-11-20",
+      "category": "車費",
+      "description": "Uber 去晚餐餐廳",
+      "amountCents": 19700,
+      "participants": [
+        "Leo Lee",
+        "William",
+        "Tomas",
+        "Macro"
+      ],
+      "paidBy": "William",
+      "note": "使用者寫 Marco，暫按晚餐名單 Macro 為同一人。"
+    },
+    {
+      "id": "e14",
+      "date": "2026-11-20",
+      "category": "車費",
+      "description": "Uber 回飯店",
+      "amountCents": 17500,
+      "participants": [
+        "William",
+        "Carrie",
+        "LamEC",
+        "Macro"
+      ],
+      "paidBy": "William",
+      "note": "使用者寫 Marco，暫按晚餐名單 Macro 為同一人。"
     }
   ],
   "settlements": [
@@ -248,5 +313,8 @@
     "collector": "William",
     "forwardTo": "Edward",
     "description": "由 William 統一收取其他團友的共同開支結算款，並集中轉帳給 Edward；未完成的轉帳只列為待付款。"
+  },
+  "nameAliases": {
+    "Marco": "Macro"
   }
 }
