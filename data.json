@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-19",
+  "updatedAt": "2026-11-20",
   "currency": "TWD",
   "travelers": [
     "William",
@@ -154,6 +154,21 @@
         "William",
         "Edward",
         "Bob"
+      ],
+      "paidBy": "William"
+    },
+    {
+      "id": "e11",
+      "date": "2026-11-20",
+      "category": "車費",
+      "description": "去台北高鐵車費",
+      "amountCents": 30700,
+      "participants": [
+        "William",
+        "Edward",
+        "Bob",
+        "LamEC",
+        "Carrie"
       ],
       "paidBy": "William"
     }
