@@ -131,7 +131,7 @@
   const fmtDate = value => escapeHTML(value||'未記錄');
   const catEmoji = cat => /餐/.test(cat)?'🍜':/車/.test(cat)?'🚕':/機場/.test(cat)?'✈️':/住/.test(cat)?'🏨':'🧾';
   const colors = ['#196f6b','#e8aa60','#83b5b3','#8a93c7','#b7a693','#bad8bf'];
-  const avatarInitials = name => ({William:'W',Edward:'E',Bob:'B',Tomas:'T',Eddie:'Ed',Ronald:'R','Leo Chau':'LC','Leo Lee':'LL',Marco:'M',Ho:'H','LamEC + Carrie':'L+C'})[name] || String(name).split(/[\\s+]+/).filter(Boolean).map(w=>w[0].toUpperCase()).join('').slice(0,3);
+  const avatarInitials = name => ({William:'W',Edward:'E',Bob:'B',Tomas:'T',Eddie:'Ed',Ronald:'R','Leo Chau':'LC','Leo Lee':'LL',Marco:'M',Ho:'H','LamEC + Carrie':'L+C'})[name] || String(name).split(/[\s+]+/).filter(Boolean).map(w=>w[0].toUpperCase()).join('').slice(0,3);
 
   function calculate(data){
     if(!data || !Array.isArray(data.travelers) || !Array.isArray(data.expenses) || !Array.isArray(data.settlements)) throw Error('資料格式不正確');
