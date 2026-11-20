@@ -13,7 +13,7 @@
     "Ronald",
     "Leo Chau",
     "Leo Lee",
-    "Macro",
+    "Marco",
     "Ho"
   ],
   "householdAccounts": [
@@ -196,7 +196,7 @@
         "Ronald",
         "Leo Chau",
         "Leo Lee",
-        "Macro",
+        "Marco",
         "Ho"
       ],
       "paidBy": "William",
@@ -217,10 +217,10 @@
         "Leo Lee",
         "William",
         "Tomas",
-        "Macro"
+        "Marco"
       ],
       "paidBy": "William",
-      "note": "使用者寫 Marco，暫按晚餐名單 Macro 為同一人。"
+      "note": "旅伴姓名已確認為 Marco。"
     },
     {
       "id": "e14",
@@ -232,10 +232,10 @@
         "William",
         "Carrie",
         "LamEC",
-        "Macro"
+        "Marco"
       ],
       "paidBy": "William",
-      "note": "使用者寫 Marco，暫按晚餐名單 Macro 為同一人。"
+      "note": "旅伴姓名已確認為 Marco。"
     }
   ],
   "settlements": [
@@ -315,6 +315,6 @@
     "description": "由 William 統一收取其他團友的共同開支結算款，並集中轉帳給 Edward；未完成的轉帳只列為待付款。"
   },
   "nameAliases": {
-    "Marco": "Macro"
+    "Macro": "Marco"
   }
 }
