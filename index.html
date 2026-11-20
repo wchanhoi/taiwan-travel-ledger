@@ -67,6 +67,12 @@
     .shopping-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0 0 18px}.shopping-metric{background:#f1f7f4;border-radius:14px;padding:14px}.shopping-metric .tiny{font-size:11px;color:#6d817c}.shopping-metric strong{display:block;font-size:19px;margin-top:7px;font-variant-numeric:tabular-nums}.shopping-title{font-size:15px;font-weight:850;margin:14px 0}.shopping-claim{background:#f8f4ea;border-radius:12px;padding:15px;font-size:13px;line-height:1.8;margin:12px 0}.shopping-owner{font-weight:750;color:#355b59}.shopping-receipt{border-top:1px solid #e4eeea;margin-top:18px;padding-top:12px}.shopping-receipt:first-child{border-top:0;margin-top:0;padding-top:0}@media(max-width:570px){.shopping-grid{grid-template-columns:1fr 1fr}.shopping-metric:first-child{grid-column:1/-1}} 
     .transfer-list{display:flex;flex-direction:column;gap:10px}.transfer-route{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto;align-items:center;gap:8px;border:1px solid #e6efec;background:#fbfdfb;border-radius:14px;padding:15px}.transfer-person{font-weight:850;font-size:13px;min-width:0;overflow-wrap:anywhere}.transfer-arrow{color:#328479;font-weight:900}.transfer-money{font-size:15px;font-weight:900;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}.transfer-scenarios{display:grid;grid-template-columns:1fr 1fr;gap:15px}.transfer-scenario{padding:18px;border:1px solid #e7eee9;border-radius:18px;background:#fff}.transfer-scenario h3{margin:0 0 8px;font-size:15px}.transfer-scenario p{margin:0 0 14px;color:#657d77;font-size:12px;line-height:1.65}.transfer-alert{padding:13px 16px;border-radius:12px;background:#fff7e8;color:#835f26;font-size:12px;line-height:1.7;margin-bottom:17px}.transfer-section{margin:20px 0 13px;font-size:15px;font-weight:850}.transfer-account{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #edf2ee;font-size:13px}.transfer-account strong{font-variant-numeric:tabular-nums}@media(max-width:800px){.transfer-scenarios{grid-template-columns:1fr}}@media(max-width:570px){.transfer-route{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:6px}.transfer-money{grid-column:1/-1;text-align:left;padding-top:4px;font-size:18px}} 
     @media(max-width:570px){.stat-grid .stat:not(:first-child) .number{font-size:clamp(18px,4.9vw,22px);letter-spacing:-.055em;white-space:normal;overflow-wrap:anywhere}.stat-grid .stat:not(:first-child) .number small{display:block;font-size:11px;margin:0 0 3px}.stat-grid .stat:first-child .number{font-size:clamp(24px,7vw,30px)}.account .acc-right{max-width:140px}.transfer-route .transfer-money{overflow-wrap:anywhere}}
+    .fx-toolbar{background:#fff;border:1px solid #e6efec;border-radius:18px;padding:17px 21px;margin:-6px 0 24px;box-shadow:0 5px 20px #16483c09}
+    .fx-row{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}.fx-name{font-weight:850;font-size:14px}.fx-controls{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+    .fx-choice,.fx-precision{border:1px solid #dce9e5;border-radius:10px;padding:9px 13px;background:#f7faf8;color:#3f6966;font-size:12px;font-weight:850;line-height:1.25}
+    .fx-choice.active,.fx-precision.active{background:#165e62;color:#fff;border-color:#165e62}.fx-choice:disabled{opacity:.45;cursor:not-allowed}
+    .fx-meta{font-size:11px;color:#708681;line-height:1.7;margin-top:12px;overflow-wrap:anywhere}.fx-meta a{color:#237673;text-decoration:underline;text-underline-offset:2px}.fx-rate-list{font-variant-numeric:tabular-nums;font-weight:750;color:#385e5d}
+    @media(max-width:570px){.fx-toolbar{padding:14px 16px;margin-bottom:16px}.fx-controls{width:100%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}.fx-choice,.fx-precision{padding:9px 3px;font-size:11px}.fx-name{font-size:13px}}
     .empty{padding:40px;text-align:center;color:var(--muted);font-size:14px;}
     .footer{color:#8da29c;text-align:center;font-size:11px;line-height:1.8;padding:37px 15px 40px;}
     .sync{display:flex;align-items:center;gap:7px;font-size:11px;color:#7d9690}
@@ -87,10 +93,24 @@
   </div></section>
   <main class="wrap">
     <div class="stat-grid" aria-label="帳目摘要">
-      <div class="stat"><div><div class="label"><span class="circle"></span>旅程累計支出</div><div class="sub">2026年11月 · 新台幣</div></div><div class="number"><small>NT$</small><span id="total">35,539</span></div></div>
-      <div class="stat"><div class="label"><span class="circle blue"></span>已登記結算</div><div class="number"><small>NT$</small><span id="paid">3,268.63</span></div><div class="sub">旅伴已付款項</div></div>
-      <div class="stat"><div class="label"><span class="circle orange"></span>其他旅伴待付 William</div><div class="number"><small>NT$</small><span id="remaining">20,234.60</span></div><div class="sub">Bob 與 LamEC + Carrie 待付 William 的金額</div></div>
+      <div class="stat"><div><div class="label"><span class="circle"></span>旅程累計支出</div><div class="sub">2026年11月 · 基準帳本 TWD</div></div><div class="number"><small id="total-prefix">NT$</small><span id="total">35,539</span></div></div>
+      <div class="stat"><div class="label"><span class="circle blue"></span>已登記結算</div><div class="number"><small id="paid-prefix">NT$</small><span id="paid">3,269</span></div><div class="sub">旅伴已付款項</div></div>
+      <div class="stat"><div class="label"><span class="circle orange"></span>其他旅伴待付 William</div><div class="number"><small id="remaining-prefix">NT$</small><span id="remaining">20,235</span></div><div class="sub">其他旅伴待付 William 的金額（整數向上）</div></div>
     </div>
+    <section class="fx-toolbar" aria-label="幣別及匯率">
+      <div class="fx-row"><div class="fx-name">💱 顯示幣別</div>
+        <div class="fx-controls" role="group" aria-label="幣別及小數位">
+          <button class="fx-choice active" type="button" data-currency="TWD" aria-pressed="true">TWD</button>
+          <button class="fx-choice" type="button" data-currency="SGD" aria-pressed="false">SGD</button>
+          <button class="fx-choice" type="button" data-currency="HKD" aria-pressed="false">HKD</button>
+          <button class="fx-precision" type="button" id="precisionBtn" aria-pressed="false">顯示小數</button>
+        </div>
+      </div>
+      <div class="fx-meta"><span class="fx-rate-list" id="fx-rates">1 TWD ≈ S$0.03914 ／ HK$0.2378</span><span id="fx-status"> · 2026-11-20 參考快照（非即時）</span>
+        <div id="fx-sources">快照參考來源：<a href="https://currencycalc.app/en-gb/twd-to-sgd" target="_blank" rel="noopener noreferrer">SGD</a>、<a href="https://www.xe.com/en-ca/currencyconverter/convert/?Amount=1&amp;From=TWD&amp;To=HKD" target="_blank" rel="noopener noreferrer">HKD</a>。即時取用每日更新的 <a href="https://www.exchangerate-api.com" target="_blank" rel="noopener noreferrer">Rates By Exchange Rate API</a>。</div>
+        <div id="fx-notice">顯示金額預設向上取整；分攤帳本保留原始精確金額。SGD/HKD 為市場參考價，不含銀行匯差及手續費。</div>
+      </div>
+    </section>
     <div id="alert" class="alert" role="status"></div>
     <nav class="tabs" role="tablist" aria-label="帳目分類">
       <button class="tab active" type="button" role="tab" aria-selected="true" data-panel="overview">總覽</button>
@@ -103,7 +123,7 @@
     <section class="panel active" id="overview" role="tabpanel">
       <div class="grid2">
         <div class="card"><div class="card-head"><h2>旅伴結算狀態</h2><span class="subtitle">11 個結算帳戶 · 12 位旅伴</span></div><div id="accounts-list"></div><div class="hint">ℹ︎ LamEC + Carrie 合併結算，但每筆消費仍按兩個人計算。14 筆共同開支由 William 與 Edward 分別代付。LamEC + Carrie 已付款項由 William 收取；William 統一向其他旅伴收款，再結算 Edward。</div></div>
-        <div class="card"><div class="card-head"><h2>開支分佈</h2><span class="subtitle">按類別</span></div><div class="donutbox"><div class="donut" id="donut" role="img" aria-label="各類開支比例"><div class="donut-center"><strong id="donut-total">35,539</strong><small>總消費 NT$</small></div></div></div><div class="legend" id="legend"></div></div>
+        <div class="card"><div class="card-head"><h2>開支分佈</h2><span class="subtitle">按類別</span></div><div class="donutbox"><div class="donut" id="donut" role="img" aria-label="各類開支比例"><div class="donut-center"><strong id="donut-total">35,539</strong><small id="donut-currency">總消費 TWD</small></div></div></div><div class="legend" id="legend"></div></div>
       </div>
       <div class="section-row"><h2>誰要付款給誰？</h2><span class="muted">共同開支與個人購物分開結算</span></div>
       <div class="card" id="transfer-overview"></div>
@@ -125,8 +145,20 @@
   // All accounting uses integer cents. Shopping is kept separate.
   const embeddedPreview = {"version":1,"updatedAt":"2026-11-20","currency":"TWD","travelers":["William","Edward","Bob","LamEC","Carrie","Tomas","Eddie","Ronald","Leo Chau","Leo Lee","Marco","Ho"],"householdAccounts":[{"name":"LamEC + Carrie","members":["LamEC","Carrie"]}],"expenses":[{"id":"e1","date":"2026-11-18","category":"機場接送","description":"機場接送","amountCents":280000,"participants":["William","Edward","Bob"],"paidBy":"William"},{"id":"e2","date":"2026-11-18","category":"餐飲","description":"18號晚餐","amountCents":744700,"participants":["William","Edward","Bob","LamEC","Carrie"],"paidBy":"Edward"},{"id":"e3","date":"2026-11-18","category":"車費","description":"車費 ①","amountCents":22900,"participants":["William","Bob","LamEC","Carrie"],"paidBy":"William"},{"id":"e4","date":"2026-11-18","category":"車費","description":"車費 ②","amountCents":26300,"participants":["William","LamEC","Carrie"],"paidBy":"William"},{"id":"e5","date":"2026-11-19","category":"車費","description":"去 SOGO 車費","amountCents":15400,"participants":["William","Bob","LamEC","Carrie"],"paidBy":"William"},{"id":"e6","date":"2026-11-19","category":"車費","description":"去新光三越車費","amountCents":13000,"participants":["Edward","William","Bob"],"paidBy":"William"},{"id":"e7","date":"2026-11-19","category":"車費","description":"去 Swork 車費","amountCents":15000,"participants":["Edward","William","Bob"],"paidBy":"William"},{"id":"e8","date":"2026-11-19","category":"車費","description":"去按摩車費","amountCents":11800,"participants":["William","LamEC","Carrie"],"paidBy":"William"},{"id":"e9","date":"2026-11-19","category":"餐飲","description":"上吉燒肉晚餐","amountCents":1079100,"participants":["William","Edward","Bob","LamEC","Carrie"],"paidBy":"Edward","receiptTime":"20:08","receiptSource":"中國信託銀行信用卡交易收據"},{"id":"e10","date":"2026-11-19","category":"車費","description":"回酒店車費","amountCents":23800,"participants":["William","Edward","Bob"],"paidBy":"William"},{"id":"e11","date":"2026-11-20","category":"車費","description":"去台北高鐵車費","amountCents":30700,"participants":["William","Edward","Bob","LamEC","Carrie"],"paidBy":"William"},{"id":"e12","date":"2026-11-20","category":"餐飲","description":"20號晚餐（收據）","amountCents":1254000,"participants":["William","Edward","Bob","Carrie","LamEC","Tomas","Eddie","Ronald","Leo Chau","Leo Lee","Marco","Ho"],"paidBy":"William","receiptTime":"20:14:49","receiptBreakdown":{"foodCents":1140000,"serviceChargeCents":114000},"note":"收據銷售總計 NT$12,540，已包括 NT$1,140 服務費；12人平均分攤。"},{"id":"e13","date":"2026-11-20","category":"車費","description":"Uber 去晚餐餐廳","amountCents":19700,"participants":["Leo Lee","William","Tomas","Marco"],"paidBy":"William","note":"旅伴姓名已確認為 Marco。"},{"id":"e14","date":"2026-11-20","category":"車費","description":"Uber 回飯店","amountCents":17500,"participants":["William","Carrie","LamEC","Marco"],"paidBy":"William","note":"旅伴姓名已確認為 Marco。"}],"settlements":[{"id":"p1","recordedAt":"2026-11-19","account":"LamEC + Carrie","amountCents":326863,"receivedBy":"William","note":"LamEC + Carrie 的已付款 NT$3,268.63 由 William 收取；William 會將應付 Edward 的共同開支款項集中轉交，未確認實際轉帳前不記為已付 Edward。"}],"shoppingReceipts":[{"id":"rapha-20261119-ht54441342","date":"2026-11-19","time":"13:08","merchant":"Rapha","receiptNumber":"HT-54441342","paidBy":"Carrie","currency":"TWD","items":[{"description":"Men's Brevet Element Cargo Bib Shorts","amountCents":476000,"owner":"William"},{"description":"Women's Pro Team LS Lightweight Jersey III","amountCents":440000,"owner":"Carrie"},{"description":"Women's Pro Team Gore-Tex LW Rain Jacket II","amountCents":1040000,"owner":"Carrie"},{"description":"Clubhouse Essentials Case","amountCents":140000,"owner":"William"},{"description":"Brevet Cap","amountCents":140000,"owner":"William"},{"description":"Clubhouse Cap","amountCents":114000,"owner":"William"},{"description":"Women's Pro Team Shadow Gilet","amountCents":776000,"owner":"Carrie"},{"description":"Women's Pro Team LS Lightweight Jersey III","amountCents":440000,"owner":"Carrie"},{"description":"Women's Pro Team Long Sleeve Midweight Jersey II","amountCents":529600,"owner":"Carrie"}],"totalCents":4095600,"note":"收據上黃色標記4件屬William；其他5件屬Carrie。由Carrie支付整張發票。個人購物，不納入共同旅行分攤。"}],"defaultPaidBy":"William","settlementRouting":{"collector":"William","forwardTo":"Edward","description":"由 William 統一收取其他團友的共同開支結算款，並集中轉帳給 Edward；未完成的轉帳只列為待付款。"},"nameAliases":{"Macro":"Marco"}};
   const $ = id => document.getElementById(id);
-  const currency = cents => 'NT$' + (cents/100).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-  const number = cents => (cents/100).toLocaleString('en-US',{minimumFractionDigits:cents%100===0?0:2,maximumFractionDigits:2});
+  // All accounting stays in integer TWD cents; exchange and ceil are presentation only.
+  const FX_SNAPSHOT={rates:{SGD:0.03914,HKD:0.2378},asOf:'2026-11-20T11:00:00Z'};
+  const FX_MAX_AGE=72*60*60*1000;
+  const freshSnapshot=()=>{const diff=Date.now()-Date.parse(FX_SNAPSHOT.asOf);return diff>=-6*60*60*1000&&diff<FX_MAX_AGE};
+  let selectedCurrency='TWD',showExactAmounts=false,lastModel=null,lastOffline=false,fxLastCheckedAt=0;
+  const fxState={rates:{...FX_SNAPSHOT.rates},asOf:FX_SNAPSHOT.asOf,source:'snapshot',available:freshSnapshot()};
+  const prefixFor=code=>({TWD:'NT$',SGD:'S$',HKD:'HK$'})[code]||'NT$';
+  const originalValue=cents=>(Number(cents)/100)*(selectedCurrency==='TWD'?1:fxState.rates[selectedCurrency]);
+  const ceilCurrency=value=>Math.ceil(Math.max(0,value-1e-9));
+  const formatted=cents=>showExactAmounts
+    ?originalValue(cents).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})
+    :ceilCurrency(originalValue(cents)).toLocaleString('en-US',{maximumFractionDigits:0});
+  const currency=cents=>prefixFor(selectedCurrency)+formatted(cents);
+  const number=cents=>formatted(cents);
   const escapeHTML = value => String(value==null?'':value).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});
   const fmtDate = value => escapeHTML(value||'未記錄');
   const catEmoji = cat => /餐/.test(cat)?'🍜':/車/.test(cat)?'🚕':/機場/.test(cat)?'✈️':/住/.test(cat)?'🏨':'🧾';
@@ -250,6 +282,10 @@
     return result;
   }
   function show(model,offline){
+    lastModel=model;lastOffline=offline;
+    const label=prefixFor(selectedCurrency);
+    for(const id of ['total-prefix','paid-prefix','remaining-prefix'])$(id).textContent=label;
+    $('donut-currency').textContent='總消費 '+selectedCurrency;
     const data=model.original;
     $('total').textContent=number(model.expenseTotal);
     $('paid').textContent=number(model.settlementTotal);
@@ -315,6 +351,63 @@
     $('footer-live').textContent=(offline?'離線預覽資料':'資料來源：獨立 JSON 帳本')+' · 更新日期 '+escapeHTML(data.updatedAt||'未提供');
     $('connection').innerHTML=offline?'<span class="dot" style="background:#edb96e"></span>離線預覽':'<span class="dot"></span>網站資料已同步';
   }
+
+  function renderFx(){
+    if(!fxState.available && selectedCurrency!=='TWD')selectedCurrency='TWD';
+    for(const button of document.querySelectorAll('[data-currency]')){
+      const selected=button.dataset.currency===selectedCurrency;
+      button.classList.toggle('active',selected);
+      button.setAttribute('aria-pressed',selected?'true':'false');
+      button.disabled=button.dataset.currency!=='TWD'&&!fxState.available;
+    }
+    $('precisionBtn').classList.toggle('active',showExactAmounts);
+    $('precisionBtn').setAttribute('aria-pressed',showExactAmounts?'true':'false');
+    $('precisionBtn').textContent=showExactAmounts?'顯示整數':'顯示小數';
+    $('fx-notice').textContent=showExactAmounts
+      ?'目前顯示兩位小數；精確 TWD 帳本未被更改。SGD、HKD 為參考市場換算，不含銀行匯差與手續費。'
+      :'所有顯示金額向上取整；帳本仍按原始 TWD「分」精確計算。各項進位後合計可能有尾差，實際轉帳請以「顯示小數」的金額核對。外幣僅供參考。';
+    if(fxState.available){
+      $('fx-rates').textContent='1 TWD ≈ S$'+fxState.rates.SGD.toFixed(5)+' ／ HK$'+fxState.rates.HKD.toFixed(5);
+      const when=new Date(fxState.asOf).toLocaleString('zh-TW',{timeZone:'Asia/Taipei',hour12:false});
+      $('fx-status').textContent=' · '+when+'（台灣時間）· '+(fxState.source==='api'?'每日更新參考匯率':'經核對的歷史參考快照，待更新');
+    }else{
+      $('fx-rates').textContent='最新 SGD / HKD 匯率暫不可用';
+      $('fx-status').textContent=' · 暫停外幣換算，避免使用過期匯率';
+    }
+  }
+  async function refreshFx(force=false){
+    const now=Date.now();
+    if(!force && fxLastCheckedAt && now-fxLastCheckedAt<60*60*1000)return;
+    fxLastCheckedAt=now;
+    try{
+      const response=await fetch('https://open.er-api.com/v6/latest/TWD',{cache:'no-store'});
+      if(!response.ok)throw Error('FX HTTP '+response.status);
+      const json=await response.json();
+      const SGD=Number(json.rates?.SGD),HKD=Number(json.rates?.HKD),unix=Number(json.time_last_update_unix);
+      const age=now-unix*1000;
+      if(json.result!=='success'||json.base_code!=='TWD'||!(SGD>0.01&&SGD<0.2)||!(HKD>0.1&&HKD<1)||!Number.isFinite(unix)||age< -6*60*60*1000||age>FX_MAX_AGE)
+        throw Error('FX timestamp invalid or quote unavailable');
+      fxState.rates={SGD,HKD};
+      fxState.asOf=new Date(unix*1000).toISOString();
+      fxState.source='api';fxState.available=true;
+    }catch(error){
+      // Do not silently display outdated market rates as live quotes.
+      if(fxState.source!=='api')fxState.available=freshSnapshot();
+    }
+    renderFx();
+    if(lastModel)show(lastModel,lastOffline);
+  }
+  document.querySelectorAll('[data-currency]').forEach(button=>button.addEventListener('click',()=>{
+    const code=button.dataset.currency;
+    if(code!=='TWD'&&!fxState.available)return;
+    selectedCurrency=code;renderFx();
+    if(lastModel)show(lastModel,lastOffline);
+  }));
+  $('precisionBtn').addEventListener('click',()=>{
+    showExactAmounts=!showExactAmounts;
+    renderFx();if(lastModel)show(lastModel,lastOffline);
+  });
+
   async function refresh(){
     const button=$('refreshBtn');button.disabled=true;button.textContent='⟳　載入中…';$('alert').classList.remove('show');
     try{
@@ -334,9 +427,11 @@
       document.querySelectorAll('.panel').forEach(panel=>panel.classList.toggle('active',panel.id===button.dataset.panel));
     });
   });
-  $('refreshBtn').addEventListener('click',refresh);
+  $('refreshBtn').addEventListener('click',()=>{refresh();refreshFx(true);});
+  renderFx();
   show(calculate(embeddedPreview),true);
   refresh();
+  refreshFx();
 
 </script>
 </body>
